@@ -1,0 +1,333 @@
+% \iffalse meta-comment
+%
+% Copyright 2011 by Philipp Stephani
+%
+% This file may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either
+% version 1.3c of this license or (at your option) any later
+% version.  The latest version of this license is in:
+%
+%    http://www.latex-project.org/lppl.txt
+%
+% and version 1.3c or later is part of all distributions of
+% LaTeX version 2009/09/24 or later.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\documentclass[a4paper, 10pt]{phst-doc}
+
+\usepackage{lualatex-math}
+\newcommand*{\thispackage}{\textsf{lualatex-math}\xspace}
+
+\setlength{\overfullrule}{5pt}
+
+\begin{document}
+
+\DocInput{lualatex-math.dtx}
+\PrintChanges
+\PrintIndex
+
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{0}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+%
+% \changes{v0.1}{2011/04/22}{Initial version}
+%
+% \GetFileInfo{lualatex-math.sty}
+%
+% \title{The \thispackage package\thanks{This document corresponds to \thispackage{}~\fileversion, dated~\filedate.}}
+% \author{Philipp Stephani \\ \texttt{st\_philipp@yahoo.de}}
+% \date{\filedate}
+%
+%
+% \maketitle
+% \tableofcontents
+% \listoftables
+%
+%
+% \section{Introduction}
+%
+%
+% \section{Interface}
+%
+%
+% \StopEventually{}
+%
+%
+% \section{Implementation}
+%
+%    \begin{macrocode}
+%<*package>
+\NeedsTeXFormat{LaTeX2e}[2009/09/24]
+\RequirePackage{expl3}[2011/02/17]
+\ProvidesExplPackage{lualatex-math}{2011/04/22}{0.1}%
+  {Patches for mathematics typesetting with LuaLaTeX}
+\RequirePackage { etoolbox } [ 2007/10/08 ]
+\RequirePackage { luatexbase } [ 2010/05/27 ]
+\RequirePackage { filehook } [ 2011/03/09 ]
+\use:x {
+  \exp_not:N \AtEndOfPackage {
+    \char_set_catcode:nn { \int_eval:n { `\$ } }
+      { \char_value_catcode:n { `\$ } }
+  }
+}
+\char_make_math_shift:N \$
+\msg_new:nnn { lualatex-math } { luatex-required } {
+  The~ lualatex-math~ package~ requires~ LuaTeX. \\
+  I~ will~ stop~ loading~ now.
+}
+\msg_new:nnn { lualatex-math } { macro-expected } {
+  I've~ expected~ that~ #1~ is~ a~ macro,~ but~ it~ isn't.
+}
+\msg_new:nnn { lualatex-math } { wrong-meaning } {
+  I've~ expected~ #1~ to~ have~ the~ meaning \\
+  #3, \\
+  but~ it~ has~ the~ meaning \\
+  #2.
+}
+\msg_new:nnn { lualatex-math } { patch-macro } {
+  I'm~ going~ to~ patch~ macro~ #1.
+}
+\luatex_if_engine:F {
+  \msg_error:nn { lualatex-math } { luatex-required }
+  \endinput
+}
+%    \end{macrocode}
+%
+% \begin{macro}{\lltxmath_temp:w}
+%   A scratch macro.
+%    \begin{macrocode}
+\chk_if_free_cs:N \lltxmath_temp:w
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\lltxmath_patch:NNnnn}
+% \begin{macro}{\lltxmath_patch:cNnnn}
+%   The macro \cmd{\lltxmath_patch:NNnnn}\meta{command}\meta{factory
+%   command}\marg{parameter text}\marg{expected replacement text}\marg{new
+%   replacement text} tries to patch \meta{command}.  If \meta{command} is
+%   undefined, do nothing.  Otherwise it must be a macro with the given
+%   \meta{parameter text} and \meta{expected replacement text}, created by the
+%   given \meta{factory command} or equivalent.  In this case it will be
+%   overwritten using the \meta{parameter text} and the \meta{new replacement
+%   text}.  Otherwise issue a warning and don't overwrite.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \lltxmath_patch:NNnnn #1 #2 #3 #4 #5 {
+  \cs_if_exist:NT #1 {
+    \token_if_macro:NTF #1 {
+      \group_begin:
+      #2 \lltxmath_temp:w #3 { #4 }
+      \cs_if_eq:NNTF #1 \lltxmath_temp:w {
+        \msg_info:nnx { lualatex-math } { patch-macro }
+          { \token_to_str:N #1 }
+        \group_end:
+        #2 #1 #3 { #5 }
+      } {
+        \msg_warning:nnxxx { lualatex-math } { wrong-meaning }
+          { \token_to_str:N #1 } { \token_to_meaning:N #1 }
+          { \token_to_meaning:N \lltxmath_temp:w }
+        \group_end:
+      }
+    } {
+      \msg_warning:nnx { lualatex-math } { macro-expected }
+        { \token_to_str:N #1 }
+    }
+  }
+}
+\cs_generate_variant:Nn \lltxmath_patch:NNnnn { c }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%
+% \subsection{\LaTeXe\ kernel}
+%
+% \cmd{\frac} can be patched for \hologo{LuaTeX}, but \cmd{\choose},
+% \cmd{\brack} and \cmd{\brace} should be discouraged.
+%
+%    \begin{macrocode}
+\luatexbase@ensure@primitive { Ustack }
+\AtEndPreamble {
+  \@ifpackageloaded { amsmath } { } {
+    \lltxmath_patch:NNnnn \frac \cs_set_nopar:Npn { #1 #2 } {
+      {
+        \begingroup #1 \endgroup \over #2
+      }
+    } {
+      {
+        \luatexUstack { \group_begin: #1 \group_end: \over #2 }
+      }
+    }
+  }
+}
+%    \end{macrocode}
+%
+%
+% \subsection{\pkg{amsmath}}
+%
+%    \begin{macrocode}
+\luatexbase@ensure@primitive { Umathstacknumup }
+\luatexbase@ensure@primitive { Umathstackdenomdown }
+\luatexbase@ensure@primitive { Umathstackvgap }
+\AtEndOfPackageFile * { amsmath } {
+%    \end{macrocode}
+% The \env{subarray} environment uses inappropriate font dimensions.
+%    \begin{macrocode}
+  \lltxmath_patch:NNnnn \subarray \cs_set:Npn { #1 } {
+    \vcenter
+    \bgroup
+    \Let@
+    \restore@math@cr
+    \default@tag
+    \baselineskip \fontdimen 10~ \scriptfont \tw@
+    \advance \baselineskip \fontdimen 12~ \scriptfont \tw@
+    \lineskip \thr@@ \fontdimen 8~ \scriptfont \thr@@
+    \lineskiplimit \lineskip
+    \ialign
+    \bgroup
+    \ifx c #1 \hfil \fi
+    $ \m@th \scriptstyle ## $
+    \hfil
+    \crcr
+  } {
+    \vcenter
+    \c_group_begin_token
+    \Let@
+    \restore@math@cr
+    \default@tag
+    \skip_set:Nn \baselineskip {
+%    \end{macrocode}
+% Here we use stack top shift + stack bottom shift, which sounds reasonable.
+%    \begin{macrocode}
+      \luatexUmathstacknumup \scriptstyle
+      + \luatexUmathstackdenomdown \scriptstyle
+    }
+%    \end{macrocode}
+% Here we use the minimum stack gap.
+%    \begin{macrocode}
+    \lineskip \luatexUmathstackvgap \scriptstyle
+    \lineskiplimit \lineskip
+    \ialign
+    \c_group_begin_token
+    \token_if_eq_meaning:NNT c #1 { \hfil }
+    \c_math_shift_token
+    \m@th
+    \scriptstyle
+    \c_parameter_token \c_parameter_token
+    \c_math_shift_token
+    \hfil
+    \crcr
+  }
+%    \end{macrocode}
+% For \hologo{LuaTeX}, \cmd{\frac} and \cmd{\genfrac} should use
+% \cmd{\luatexUstack} for correct math style selection.
+%    \begin{macrocode}
+  \lltxmath_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
+    {
+      \begingroup #1 \endgroup \@@over #2
+    }
+  } {
+    {
+      \luatexUstack { \group_begin: #1 \group_end: \@@over #2 }
+    }
+  }
+  \lltxmath_patch:NNnnn \@genfrac \cs_set_nopar:Npn {
+    #1 #2 #3 #4 #5
+  } {
+    {
+      #1 { \begingroup #4 \endgroup #2 #3 \relax #5 }
+    }
+  } {
+    {
+      #1 {
+        \luatexUstack {
+          \group_begin: #4 \group_end: #2 #3 \scan_stop: #5
+        }
+      }
+    }
+  }
+}
+%    \end{macrocode}
+%
+%
+% \subsection{\pkg{mathtools}}
+%
+% \pkg{mathtools}'s \cmd{\cramped} command and others that make use of its
+% internal version use an incorrect font dimension.
+%
+%    \begin{macrocode}
+\luatexbase@ensure@primitive { crampeddisplaystyle }
+\luatexbase@ensure@primitive { crampedtextstyle }
+\luatexbase@ensure@primitive { crampedscriptstyle }
+\luatexbase@ensure@primitive { crampedscriptscriptstyle }
+\AtEndOfPackageFile * { mathtools } {
+  \lltxmath_patch:NNnnn \MT_cramped_internal:Nn
+    \cs_set_nopar:Npn { #1 #2 } {
+    \sbox \z@ {
+      $
+      \m@th
+      #1
+      \nulldelimiterspace = \z@
+      \radical \z@ { #2 }
+      $
+    }
+    \ifx #1 \displaystyle
+      \dimen@ = \fontdimen 8 \textfont 3
+      \advance \dimen@ .25 \fontdimen 5 \textfont 2
+    \else
+      \dimen@ = 1.25 \fontdimen 8
+      \ifx #1 \textstyle
+        \textfont
+      \else
+        \ifx #1 \scriptstyle
+          \scriptfont
+        \else
+          \scriptscriptfont
+        \fi
+      \fi
+      3
+    \fi
+    \advance \dimen@ -\ht\z@
+    \ht\z@ = -\dimen@
+    \box\z@
+  } {
+%    \end{macrocode}
+% \Hologo{LuaTeX} has primitives for setting material in cramped mode (thanks
+% to Khaled Hosny for pointing this out).  Note we don't use \cmd{\mathstyle}
+% since we want to patch only a single command.
+%    \begin{macrocode}
+    \use:c { luatexcramped \cs_to_str:N #1 } #2
+  }
+}
+%</package>
+%    \end{macrocode}
+%
+% \Finale
+\endinput
+
+% Local Variables:
+% mode: doctex
+% coding: utf-8-unix
+% TeX-engine: luatex
+% End:

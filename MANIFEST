@@ -1,0 +1,14 @@
+This work consists of the non-derived files
+
+README
+README.rst
+MANIFEST
+Makefile
+lualatex-math.dtx
+lualatex-math.ins
+lualatex-math.el
+
+and the derived file
+
+lualatex-math.sty
+lualatex-math.pdf
