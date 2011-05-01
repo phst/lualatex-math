@@ -63,57 +63,170 @@
 %
 % \maketitle
 % \tableofcontents
-% \listoftables
 %
 %
 % \section{Introduction}
 %
+% \Hologo{LuaTeX} brings major improvements to all areas of \hologo{TeX}
+% typesetting and programming.  They are made available through new primitives
+% or the embedded Lua interpreter, and combining them with existing
+% \hologo{LaTeX2e} package is not a task the average \hologo{LaTeX} user should
+% have to care about.  Therefore a multitude of \hologo{LaTeX2e} packages have
+% been written to bridge the gap between documents and the new features.  The
+% \thispackage package focuses on the additional possibilities for mathematical
+% typesetting.  The most eminent of the new features is the ability to use
+% Unicode and OpenType fonts, as provided by \Robertson’s \pkg{unicode-math}
+% package.  However, there is a smaller group of changes unrelated to Unicode:
+% these are to be dealt with in this package.  While in principle most
+% \hologo{TeX} documents written for traditional engines should work just fine
+% with \hologo{LuaTeX}, there is a small number of breaking changes that
+% require the attention of package authors.  The \thispackage package tries to
+% fix some of the issues encountered while porting traditional macro packages
+% to \hologo{LuaLaTeX}.
+%
+% The decision to write patches for existing macro packages should not be made
+% lightly: monkey patching done by somebody different from the original package
+% author ties the patching package to the implementation details of the patched
+% functionality and breaks all rules of encapsulation.  However, due to the
+% lack of alternatives, it has become an accepted way of providing new
+% functionality in \hologo{LaTeX}.  To keep the negative impact as small as
+% possible, the \thispackage package patches only the \hologo{LaTeX2e} kernel
+% and a small number of popular packages.  In general, this package should be
+% regarded as a temporary kludge that should be removed once the math-related
+% packages are updated to be usable with \hologo{LuaTeX}.
+%
 %
 % \section{Interface}
 %
+% The \thispackage package can be loaded with \cmd{\usepackage} or
+% \cmd{\RequirePackage}, as usual.  It has no options and no public interface;
+% the patching is always done when the package is loaded and cannot be
+% controlled.  As a matter of course, the \thispackage package needs
+% \hologo{LuaLaTeX} to function; it will produce error messages and refuse to
+% load under other engines and formats.  The package depends on the \pkg{expl3}
+% bundle, the \pkg{etoolbox} package, the \pkg{luatexbase} bundle and the
+% \pkg{filehook} package.  The \thispackage package is independent of the
+% \pkg{unicode-math} package; the fixes provided here are valid for both
+% Unicode and legacy math typesetting.
+%
+% Currently patches for the \hologo{LaTeX2e} kernel and the \pkg{amsmath} and
+% \pkg{mathtools} packages are provided.  It is not relevant whether you load
+% these packages before or after \thispackage.  They should work as expected
+% (and ideally you shouldn’t notice anything), but if you load other packages
+% that by themselves overwrite commands patched by this package, bad things may
+% happen, as it is usual with \hologo{LaTeX}.
+%
+% One user-visible change is that the new \cmd{\mathstyle} primitive (usually
+% called \cmd{\luatexmathstyle} in \hologo{LuaLaTeX}) should work in all cases
+% after the \thispackage package has been loaded, provided you use the
+% high-level macros \cmd{\frac}, \cmd{\binom}, and \cmd{\genfrac}.  The
+% fraction-like \hologo{TeX} primitives like \cmd{\over} or
+% \cmd{\atopwithdelims} and the \hologo{plainTeX} leftovers like \cmd{\brack}
+% or \cmd{\choose} cannot be patched, and you shouldn’t use them.
 %
 % \StopEventually{}
 %
 %
 % \section{Implementation}
 %
+% \subsection{Requirements}
+%
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2011/02/17]
-\ProvidesExplPackage{lualatex-math}{2011/04/22}{0.1}%
+\ProvidesExplPackage{lualatex-math}{2011/05/02}{0.1}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
 \RequirePackage { filehook } [ 2011/03/09 ]
-\use:x {
-  \exp_not:N \AtEndOfPackage {
-    \char_set_catcode:nn { \int_eval:n { `\$ } }
-      { \char_value_catcode:n { `\$ } }
-  }
+%    \end{macrocode}
+%
+% \begin{macro}{\lltxmath_restore_catcode:N}
+%   Executing the exhaustive expansion of
+%   \cmd{\lltxmath_restore_catcode:N}\meta{character token} restores the
+%   category code of the \meta{character token} to its current value.
+%    \begin{macrocode}
+\cs_new_nopar:Npn \lltxmath_restore_catcode:N #1 {
+  \char_set_catcode:nn { \int_eval:n { `#1 } }
+    { \char_value_catcode:n { `#1 } }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% We use the macro defined above to restore the category code of the dollar
+% sign.  There are packages that make the dollar sign active; hopefully they
+% get loaded after the packages we are trying to patch.
+%    \begin{macrocode}
+\exp_args:Nx \AtEndOfPackage {
+  \lltxmath_restore_catcode:N \$
 }
 \char_make_math_shift:N \$
+%    \end{macrocode}
+%
+%
+% \subsection{Messages}
+%
+% \begin{l3message}{luatex-required}
+%   Issued when not running under \hologo{LuaTeX}.
+%    \begin{macrocode}
 \msg_new:nnn { lualatex-math } { luatex-required } {
   The~ lualatex-math~ package~ requires~ LuaTeX. \\
   I~ will~ stop~ loading~ now.
 }
+%    \end{macrocode}
+% \end{l3message}
+%
+% \begin{l3message}{macro-expected}
+%   Issued when trying to patch a non-macro.  The first argument must be the
+%   detokenized macro name.
+%    \begin{macrocode}
 \msg_new:nnn { lualatex-math } { macro-expected } {
   I've~ expected~ that~ #1~ is~ a~ macro,~ but~ it~ isn't.
 }
+%    \end{macrocode}
+% \end{l3message}
+%
+% \begin{l3message}{wrong-meaning}
+%   Issued when trying to patch a macro with an unexpected meaning.  The first
+%   argument must be the detokenized macro name; the second argument must be
+%   the actual detokenized meaning; and the thied argument must be the expected
+%   detokenized meaning.
+%    \begin{macrocode}
 \msg_new:nnn { lualatex-math } { wrong-meaning } {
   I've~ expected~ #1~ to~ have~ the~ meaning \\
   #3, \\
   but~ it~ has~ the~ meaning \\
   #2.
 }
+%    \end{macrocode}
+% \end{l3message}
+%
+% \begin{l3message}{patch-macro}
+%   Issued when a macro is patched.  The first argument must be the detokenized
+%   macro name.
+%    \begin{macrocode}
 \msg_new:nnn { lualatex-math } { patch-macro } {
   I'm~ going~ to~ patch~ macro~ #1.
 }
+%    \end{macrocode}
+% \end{l3message}
+%
+%
+% \subsection{Initialization}
+%
+% Unless we are running under \hologo{LuaTeX}, we issue an error and quit
+% immediately.  Loading the \pkg{luatexbase} module will already have produced
+% an error, but we issue another one for clarity.
+%    \begin{macrocode}
 \luatex_if_engine:F {
   \msg_error:nn { lualatex-math } { luatex-required }
   \endinput
 }
 %    \end{macrocode}
+%
+%
+% \subsection{Patching}
 %
 % \begin{macro}{\lltxmath_temp:w}
 %   A scratch macro.
@@ -131,7 +244,7 @@
 %   \meta{parameter text} and \meta{expected replacement text}, created by the
 %   given \meta{factory command} or equivalent.  In this case it will be
 %   overwritten using the \meta{parameter text} and the \meta{new replacement
-%   text}.  Otherwise issue a warning and don't overwrite.
+%   text}.  Otherwise issue a warning and don’t overwrite.
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \lltxmath_patch:NNnnn #1 #2 #3 #4 #5 {
   \cs_if_exist:NT #1 {
@@ -163,11 +276,28 @@
 %
 % \subsection{\LaTeXe\ kernel}
 %
-% \cmd{\frac} can be patched for \hologo{LuaTeX}, but \cmd{\choose},
-% \cmd{\brack} and \cmd{\brace} should be discouraged.
+% \Hologo{LuaTeX} enables access to the current mathematical style via the
+% \cmd{\mathstyle} primitive.  For this to work, fraction-like constructs (\eg,
+% \meta{numerator} \cmd{\over} \meta{denominator}) have to be enclosed in a
+% \cmd{\Ustack} group.  \cmd{\frac} can be patched to do this, but the
+% \hologo{plainTeX} remnants \cmd{\choose}, \cmd{\brack} and \cmd{\brace}
+% should be discouraged.
 %
+% \begin{macro}{\luatexUstack}
+%   First we make sure that we can use the \cmd{\Ustack} primitive (under the
+%   name \cmd{\luatexUstack}).
 %    \begin{macrocode}
 \luatexbase@ensure@primitive { Ustack }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\frac}
+%   Here we assume that nobody except \pkg{amsmath} redefines \cmd{\frac}.
+%   This is obviously not the case, but we ignore other packages (\eg,
+%   \pkg{nath}) for the moment.  We only patch the \LaTeXe\ kernel definition
+%   if the \pkg{amsmath} package is not loaded; the corresponding patch for
+%   \pkg{amsmath} follows below.
+%    \begin{macrocode}
 \AtEndPreamble {
   \@ifpackageloaded { amsmath } { } {
     \lltxmath_patch:NNnnn \frac \cs_set_nopar:Npn { #1 #2 } {
@@ -175,6 +305,9 @@
         \begingroup #1 \endgroup \over #2
       }
     } {
+%    \end{macrocode}
+% To do: do we need the additional set of braces around \cmd{\Ustack}?
+%    \begin{macrocode}
       {
         \luatexUstack { \group_begin: #1 \group_end: \over #2 }
       }
@@ -182,17 +315,58 @@
   }
 }
 %    \end{macrocode}
+% \end{macro}
 %
 %
 % \subsection{\pkg{amsmath}}
 %
+% The popular \pkg{amsmath} package is subject to two \hologo{LuaTeX}-related problems:
+% \begin{itemize}
+% \item Legacy font dimensions are used for constructing stacks in the
+%   \cmd{\substack} command and the \env{subarray} environment.  This doesn’t
+%   work if a Unicode math font is selected.
+% \item The fraction commands \cmd{\frac} and \cmd{\genfrac} don’t use the
+%   \cmd{\Ustack} primitive.
+% \end{itemize}
+%
+% \begin{macro}{\luatexalignmark}
+% \begin{macro}{\luatexUstartmath}
+% \begin{macro}{\luatexUstopmath}
+%   We use the primitives corresponding to the alignment mark (\verb+#+) and to
+%   the inline math switches; this is more semantical and might lead to better
+%   error messages.
+%    \begin{macrocode}
+\luatexbase@ensure@primitive { alignmark }
+\luatexbase@ensure@primitive { Ustartmath }
+\luatexbase@ensure@primitive { Ustopmath }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\luatexUmathstacknumup}
+% \begin{macro}{\luatexUmathstackdenomdown}
+% \begin{macro}{\luatexUmathstackvgap}
+%   Now we require the font parameters we will use.
 %    \begin{macrocode}
 \luatexbase@ensure@primitive { Umathstacknumup }
 \luatexbase@ensure@primitive { Umathstackdenomdown }
 \luatexbase@ensure@primitive { Umathstackvgap }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+%    \begin{macrocode}
 \AtEndOfPackageFile * { amsmath } {
 %    \end{macrocode}
-% The \env{subarray} environment uses inappropriate font dimensions.
+%
+% \begin{environment}{subarray}
+%   The \env{subarray} environment uses legacy font dimensions.  We simply
+%   patch it to use \hologo{LuaTeX} font parameters (and \LaTeX3 expressions
+%   instead of \TeX\ arithmetic).  Since subscript arrays are conceptually
+%   vertical stacks, we use the sum of top and bottom shift for the default
+%   vertical baseline distance (\cmd{\baselineskip}) and the minimum vertical
+%   gap for stack for the minimum baseline distance (\cmd{\lineskip}).
 %    \begin{macrocode}
   \lltxmath_patch:NNnnn \subarray \cs_set:Npn { #1 } {
     \vcenter
@@ -217,31 +391,28 @@
     \restore@math@cr
     \default@tag
     \skip_set:Nn \baselineskip {
-%    \end{macrocode}
-% Here we use stack top shift + stack bottom shift, which sounds reasonable.
-%    \begin{macrocode}
       \luatexUmathstacknumup \scriptstyle
       + \luatexUmathstackdenomdown \scriptstyle
     }
-%    \end{macrocode}
-% Here we use the minimum stack gap.
-%    \begin{macrocode}
     \lineskip \luatexUmathstackvgap \scriptstyle
     \lineskiplimit \lineskip
     \ialign
     \c_group_begin_token
     \token_if_eq_meaning:NNT c #1 { \hfil }
-    \c_math_shift_token
+    \luatexUstartmath
     \m@th
     \scriptstyle
-    \c_parameter_token \c_parameter_token
-    \c_math_shift_token
+    \luatexalignmark \luatexalignmark
+    \luatexUstopmath
     \hfil
     \crcr
   }
 %    \end{macrocode}
-% For \hologo{LuaTeX}, \cmd{\frac} and \cmd{\genfrac} should use
-% \cmd{\luatexUstack} for correct math style selection.
+% \end{environment}
+%
+% \begin{macro}{\frac}
+%   Since \cmd{\frac} is declared by \cmd{\DeclareRobustCommand}, we must patch
+%   the macro \cmd{\frac\textvisiblespace}.
 %    \begin{macrocode}
   \lltxmath_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
     {
@@ -252,6 +423,12 @@
       \luatexUstack { \group_begin: #1 \group_end: \@@over #2 }
     }
   }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@genfrac}
+%   Generalized fractions are typeset by the internal \cmd{\@genfrac} command.
+%    \begin{macrocode}
   \lltxmath_patch:NNnnn \@genfrac \cs_set_nopar:Npn {
     #1 #2 #3 #4 #5
   } {
@@ -269,18 +446,41 @@
   }
 }
 %    \end{macrocode}
+% \end{macro}
 %
 %
 % \subsection{\pkg{mathtools}}
 %
-% \pkg{mathtools}'s \cmd{\cramped} command and others that make use of its
-% internal version use an incorrect font dimension.
+% \pkg{mathtools}’ \cmd{\cramped} command and others that make use of its
+% internal version use a hack involving a null radical.  \Hologo{LuaTeX} has
+% primitives for setting material in cramped mode, so we make use of them.
 %
+% \begin{macro}{\luatexcrampeddisplaystyle}
+% \begin{macro}{\luatexcrampedtextstyle}
+% \begin{macro}{\luatexcrampedscriptstyle}
+% \begin{macro}{\luatexcrampedscriptscriptstyle}
+%   First we make sure that the needed primitives for cramped styles are
+%   available.
 %    \begin{macrocode}
 \luatexbase@ensure@primitive { crampeddisplaystyle }
 \luatexbase@ensure@primitive { crampedtextstyle }
 \luatexbase@ensure@primitive { crampedscriptstyle }
 \luatexbase@ensure@primitive { crampedscriptscriptstyle }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\MT_cramped_internal:Nn}
+%   The macro \cmd{\MT_cramped_internal:Nn}\meta{style}\marg{expression}
+%   typesets the \meta{expression} in the cramped style corresponding to the
+%   given \meta{style} (\cmd{\displaystyle} etc.); all we have to do in
+%   \hologo{LuaTeX} is to select the correct primitive.  Rewriting the
+%   user-level \cmd{\cramped} command and employing \cmd{\mathstyle} would be
+%   possible as well, but we avoid this way since we want to patch only a
+%   single command.
+%    \begin{macrocode}
 \AtEndOfPackageFile * { mathtools } {
   \lltxmath_patch:NNnnn \MT_cramped_internal:Nn
     \cs_set_nopar:Npn { #1 #2 } {
@@ -312,16 +512,12 @@
     \ht\z@ = -\dimen@
     \box\z@
   } {
-%    \end{macrocode}
-% \Hologo{LuaTeX} has primitives for setting material in cramped mode (thanks
-% to Khaled Hosny for pointing this out).  Note we don't use \cmd{\mathstyle}
-% since we want to patch only a single command.
-%    \begin{macrocode}
     \use:c { luatexcramped \cs_to_str:N #1 } #2
   }
 }
 %</package>
 %    \end{macrocode}
+% \end{macro}
 %
 % \Finale
 \endinput
