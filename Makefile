@@ -15,8 +15,8 @@
 
 SHELL := /bin/sh
 INSTALL := install
-INSTALL_PROGRAM := $(INSTALL)
-INSTALL_DATA := $(INSTALL) -m 644
+INSTALL_PROGRAM := $(INSTALL) -c -m 755
+INSTALL_DATA := $(INSTALL) -c -m 644
 
 MKTEXLSR := mktexlsr
 TEX := tex
@@ -85,10 +85,11 @@ $(tests_dest): %.pdf: %.tex $(destination)
 	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
 $(manual): $(source) $(destination)
-	$(LATEX) $(LATEXFLAGS_DRAFT) $(source)
+	$(LATEX) $(LATEXFLAGS_DRAFT) $<
 	$(MAKEINDEX) -s $(index_sty) -o $(index_dest) -t $(index_log) $(index_src)
 	$(MAKEINDEX) -s $(changes_sty) -o $(changes_dest) -t $(changes_log) $(changes_src)
-	$(LATEX) $(LATEXFLAGS_DRAFT) $(source)
-	$(LATEX) $(LATEXFLAGS_FINAL) $(source)
+	$(LATEX) $(LATEXFLAGS_DRAFT) $<
+	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
+.PHONY: all check pdf complete install install-pdf install-complete
 .SUFFIXES:
