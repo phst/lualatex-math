@@ -322,14 +322,26 @@
 %
 % \subsection{\pkg{amsmath}}
 %
-% The popular \pkg{amsmath} package is subject to two \hologo{LuaTeX}-related problems:
+% The popular \pkg{amsmath} package is subject to three \hologo{LuaTeX}-related problems:
 % \begin{itemize}
+% \item The \cmd{\mathcode} primitive is used several times, which fails for
+%   Unicode math characters.  \cmd{\Umathcode} should be used instead.
 % \item Legacy font dimensions are used for constructing stacks in the
 %   \cmd{\substack} command and the \env{subarray} environment.  This doesn’t
 %   work if a Unicode math font is selected.
 % \item The fraction commands \cmd{\frac} and \cmd{\genfrac} don’t use the
 %   \cmd{\Ustack} primitive.
 % \end{itemize}
+%
+% \begin{macro}{\luatexUmathcodenum}
+% \begin{macro}{\luatexUmathchardef}
+%   We need the extended versions of \cmd{\mathcode} and \cmd{\mathchardef}.
+%    \begin{macrocode}
+\luatexbase@ensure@primitive { Umathcodenum }
+\luatexbase@ensure@primitive { Umathchardef }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
 %
 % \begin{macro}{\luatexalignmark}
 % \begin{macro}{\luatexUstartmath}
@@ -359,9 +371,143 @@
 % \end{macro}
 % \end{macro}
 %
+% \begin{macro}{\c_lltxmath_std_minus_mathcode_int}
+% \begin{macro}{\c_lltxmath_std_equal_mathcode_int}
+%   These constants contain the standard \hologo{TeX} mathematical codes for
+%   the minus and the equal signs.  We temporarily set the math codes to these
+%   constants before loading the \pkg{amsmath} package so that it can request
+%   the legacy math code without error.
+%    \begin{macrocode}
+\int_const:Nn \c_lltxmath_std_minus_mathcode_int { "2200 }
+\int_const:Nn \c_lltxmath_std_equal_mathcode_int { "303D }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\lltxmath_set_mathchar:NN}
+%   The macro \cmd{\lltxmath_set_mathchar:NN}\meta{control
+%   sequence}\meta{token} defines the \meta{control sequence} as an extended
+%   mathematical character shorthand whose mathematical code is given by the
+%   mathematical code of the character \texttt{\textasciigrave}\meta{token}.
+%   Since there is no \cmd{\Umathcharnumdef} primitive, we have to extract the
+%   class, family, and slot numbers separately.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \lltxmath_set_mathchar:NN #1 #2 {
+  \luatexUmathchardef #1
+  \lua_now:x {
+    lualatex.math.print_class_fam_slot( \int_eval:n { `#2 } )
+  }
+  \scan_stop:
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\lltxmath_char_dim:NN}
+%   The macro \cmd{\lltxmath_char_dim:NN}\meta{primitive}\meta{token} expands
+%   to a \meta{dimen} whose value is the metric of the mathematical character
+%   corresponding to the character \texttt{\textasciigrave}\meta{token}
+%   specified by \meta{primitive}, which must be one of \cmd{\fontcharwd},
+%   \cmd{\fontcharht} or \cmd{\fontchardp}, in the currently selected text
+%   style font.
+%    \begin{macrocode}
+\cs_new_nopar:Npn \lltxmath_char_dim:NN #1 #2 {
+  #1 \textfont
+  \lua_now:x {
+    lualatex.math.print_fam_slot( \int_eval:n { `#2 } )
+  }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l_lltxmath_minus_mathchar}
+% \begin{macro}{\l_lltxmath_equal_mathchar}
+%   These mathematical characters are saved before \pkg{amsmath} is loaded so
+%   that we can temporarily assign the \hologo{TeX} values to the mathematical
+%   codes of the minus and equals signs.  The \pkg{amsmath} package queries
+%   these codes, and if they represent Unicode characters, the package loading
+%   will fail.  If \pkg{amsmath} has already been loaded, there is nothing we
+%   can do, therefore we use the non-starred version of
+%   \cmd{\AtBeginOfPackageFile}.
+%    \begin{macrocode}
+\chk_if_free_cs:N \l_lltxmath_minus_mathchar
+\chk_if_free_cs:N \l_lltxmath_equal_mathchar
+\AtBeginOfPackageFile { amsmath } {
+  \lltxmath_set_mathchar:NN \l_lltxmath_minus_mathchar \-
+  \lltxmath_set_mathchar:NN \l_lltxmath_equal_mathchar \=
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% Now we temporarily reset the mathematical codes.
+%    \begin{macrocode}
+  \char_set_mathcode:nn { `\- } { \c_lltxmath_std_minus_mathcode_int }
+  \char_set_mathcode:nn { `\= } { \c_lltxmath_std_equal_mathcode_int }
+  \AtEndOfPackageFile { amsmath } {
+%    \end{macrocode}
+% \begin{macro}{\std@minus}
+% \begin{macro}{\std@equals}
+%   The \pkg{amsmath} package defines the control sequences \cmd{\std@minus}
+%   and \cmd{\std@equal} as mathematical character shorthands while loading,
+%   but uses our restored mathematical codes, which must be fixed.
+%    \begin{macrocode}
+    \cs_set_eq:NN \std@minus \l_lltxmath_minus_mathchar
+    \cs_set_eq:NN \std@equal \l_lltxmath_equal_mathchar
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% Finally, we restore the original mathematical codes of the two signs.
+%    \begin{macrocode}
+    \luatexUmathcodenum `\- \l_lltxmath_minus_mathchar
+    \luatexUmathcodenum `\= \l_lltxmath_equal_mathchar
+  }
+}
+%    \end{macrocode}
+% All of the following fixes work even if \pkg{amsmath} is already loaded.
+% \begin{macro}{\@begindocumenthook}
+%   \pkg{amsmath} repeats the definiton of \cmd{\std@minus} and
+%   \cmd{\std@equal} at the beginning of the document, so we also have to patch
+%   the internal kernel macro \cmd{\@begindocumenthook} which contains the hook
+%   code.
 %    \begin{macrocode}
 \AtEndOfPackageFile * { amsmath } {
+  \tl_replace_in:Nnn \@begindocumenthook {
+    \mathchardef \std@minus \mathcode `\- \relax
+    \mathchardef \std@equal \mathcode `\= \relax
+  } {
+    \lltxmath_set_mathchar:NN \std@minus \-
+    \lltxmath_set_mathchar:NN \std@equal \=
+  }
 %    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\resetMathstrut@}
+%   \pkg{amsmath} uses the box \cmd{\Mathstrutbox@} for struts in mathematical
+%   mode.  This box is defined to have the height and depth of the opening
+%   parenthesis taken from the current text font.  The command
+%   \cmd{\resetMathstrut@} is executed whenever the mathematical fonts are
+%   changed and has to restore the correct dimensions.  The original definition
+%   uses a temporary mathematical character shorthand definition whose meaning
+%   is queried to extract the family and slot.  We can do this in Lua;
+%   furthermore we can avoid a temporary box because \hologo{eTeX} allows us to
+%   query glyph metrics directly.
+%    \begin{macrocode}
+  \lltxmath_patch:NNnnn \resetMathstrut@ \cs_set_nopar:Npn { } {
+    \setbox \z@ \hbox {
+      \mathchardef \@tempa \mathcode `\( \relax % \)
+      \def \@tempb ##1 "##2 ##3 { \the \textfont "##3 \char" }
+      \expandafter \@tempb \meaning \@tempa \relax
+    }
+    \ht \Mathstrutbox@ \ht \z@
+    \dp \Mathstrutbox@ \dp \z@
+  } {
+    \box_set_ht:Nn \Mathstrutbox@ {
+      \lltxmath_char_dim:NN \fontcharht \( % \)
+    }
+    \box_set_dp:Nn \Mathstrutbox@ {
+      \lltxmath_char_dim:NN \fontchardp \)
+    }
+  }
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{environment}{subarray}
 %   The \env{subarray} environment uses legacy font dimensions.  We simply
