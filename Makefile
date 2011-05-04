@@ -24,10 +24,9 @@ LATEX := lualatex
 MAKEINDEX := makeindex
 
 name := lualatex-math
-bundle := phst
 
 texmf := $(shell kpsewhich --var-value=TEXMFHOME)
-branch := latex/$(bundle)
+branch := lualatex/$(name)
 destdir := $(texmf)/tex/$(branch)
 docdir := $(texmf)/doc/$(branch)
 auctexdir := ~/.emacs.d/auctex/style
