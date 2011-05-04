@@ -276,7 +276,7 @@
 % \end{macro}
 %
 %
-% \subsection{\LaTeXe\ kernel}
+% \subsection{\Hologo{LaTeX2e} kernel}
 %
 % \Hologo{LuaTeX} enables access to the current mathematical style via the
 % \cmd{\mathstyle} primitive.  For this to work, fraction-like constructs (\eg,
@@ -296,9 +296,9 @@
 % \begin{macro}{\frac}
 %   Here we assume that nobody except \pkg{amsmath} redefines \cmd{\frac}.
 %   This is obviously not the case, but we ignore other packages (\eg,
-%   \pkg{nath}) for the moment.  We only patch the \LaTeXe\ kernel definition
-%   if the \pkg{amsmath} package is not loaded; the corresponding patch for
-%   \pkg{amsmath} follows below.
+%   \pkg{nath}) for the moment.  We only patch the \hologo{LaTeX2e} kernel
+%   definition if the \pkg{amsmath} package is not loaded; the corresponding
+%   patch for \pkg{amsmath} follows below.
 %    \begin{macrocode}
 \AtEndPreamble {
   \@ifpackageloaded { amsmath } { } {
@@ -365,11 +365,12 @@
 %
 % \begin{environment}{subarray}
 %   The \env{subarray} environment uses legacy font dimensions.  We simply
-%   patch it to use \hologo{LuaTeX} font parameters (and \LaTeX3 expressions
-%   instead of \TeX\ arithmetic).  Since subscript arrays are conceptually
-%   vertical stacks, we use the sum of top and bottom shift for the default
-%   vertical baseline distance (\cmd{\baselineskip}) and the minimum vertical
-%   gap for stack for the minimum baseline distance (\cmd{\lineskip}).
+%   patch it to use \hologo{LuaTeX} font parameters (and \hologo{LaTeX3}
+%   expressions instead of \hologo{TeX} arithmetic).  Since subscript arrays
+%   are conceptually vertical stacks, we use the sum of top and bottom shift
+%   for the default vertical baseline distance (\cmd{\baselineskip}) and the
+%   minimum vertical gap for stack for the minimum baseline distance
+%   (\cmd{\lineskip}).
 %    \begin{macrocode}
   \lltxmath_patch:NNnnn \subarray \cs_set:Npn { #1 } {
     \vcenter
