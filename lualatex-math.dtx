@@ -662,7 +662,14 @@
     \ht\z@ = -\dimen@
     \box\z@
   } {
-    \use:c { luatexcramped \cs_to_str:N #1 } #2
+%    \end{macrocode}
+% Here the additional set of braces is absolutely necessary, otherwise the
+% changed mathematical style would be applied to the material after the
+% \cmd{\mathchoice} construct.
+%    \begin{macrocode}
+    {
+      \use:c { luatexcramped \cs_to_str:N #1 } #2
+    }
   }
 }
 %</package>
