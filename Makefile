@@ -38,7 +38,12 @@ LATEXFLAGS_FINAL := $(LATEXFLAGS) --synctex=1
 
 source := $(name).dtx
 driver := $(name).ins
-destination := $(name).sty
+dest_sty := $(name).sty
+dest_lua := $(name).lua
+destination := $(dest_sty) $(dest_lua)
+tests := test-kernel test-amsmath
+tests_src := $(addsuffix .tex, $(tests))
+tests_dest := $(addsuffix .pdf, $(tests))
 manual := $(name).pdf
 auctex_style := $(name).el
 index_src := $(name).idx
@@ -53,9 +58,11 @@ changes_sty := gglo.ist
 
 all: $(destination) $(auctex_style)
 
+check: $(tests_dest)
+
 pdf: $(manual)
 
-complete: all pdf
+complete: all check pdf
 
 install: all
 	$(INSTALL) -d $(destdir)
@@ -71,8 +78,11 @@ install-pdf: pdf
 
 install-complete: install install-pdf
 
-$(destination): $(source) $(driver)
-	$(TEX) $(driver)
+$(destination) $(tests_src): $(driver) $(source)
+	$(TEX) $<
+
+$(tests_dest): %.pdf: %.tex $(destination)
+	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
 $(manual): $(source) $(destination)
 	$(LATEX) $(LATEXFLAGS_DRAFT) $(source)

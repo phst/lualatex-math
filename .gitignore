@@ -4,6 +4,8 @@ auto/
 *.tmp
 *.pdf
 *.sty
+*.lua
+test-*.tex
 *.log
 *.aux
 *.toc

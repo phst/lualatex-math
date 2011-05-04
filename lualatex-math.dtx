@@ -127,7 +127,7 @@
 % \StopEventually{}
 %
 %
-% \section{Implementation}
+% \section{Implementation of the \hologo{LaTeX2e} package}
 %
 % \subsection{Requirements}
 %
@@ -135,11 +135,12 @@
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2011/02/17]
-\ProvidesExplPackage{lualatex-math}{2011/05/02}{0.1}%
+\ProvidesExplPackage{lualatex-math}{2011/05/05}{0.1}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
 \RequirePackage { filehook } [ 2011/03/09 ]
+\RequireLuaModule { lualatex-math } [ 2011/05/05 ]
 %    \end{macrocode}
 %
 % \begin{macro}{\lltxmath_restore_catcode:N}
@@ -518,6 +519,507 @@
 %</package>
 %    \end{macrocode}
 % \end{macro}
+%
+%
+% \section{Implementation of the \hologo{LuaLaTeX} module}
+%
+% For the Lua module, we use the standard \pkg{luatexbase-modutils} template
+% and the \func{module} function.
+%    \begin{macrocode}
+%<*lua>
+require("luatexbase.modutils")
+require("luatexbase.cctb")
+local err, warn, info, log = luatexbase.provides_module({
+  name = "lualatex-math",
+  date = "2011/05/05",
+  version = 0.1,
+  description = "Patches for mathematics typesetting with LuaLaTeX",
+  author = "Philipp Stephani",
+  licence = "LPPL v1.3+"
+})
+local unpack = unpack
+local string = string
+local tex = tex
+local cctb = luatexbase.catcodetables
+module("lualatex.math")
+%    \end{macrocode}
+%
+% \begin{function}{print_fam_slot}
+%   The function \func{print_fam_slot} takes one argument which must be a
+%   number.  It interprets the argument as a Unicode code point whose
+%   mathematical code is printed in the form
+%   \meta{family}\texttt{\textvisiblespace}\meta{slot}, suitable for the
+%   right-hand side of \eg \verb|\fontcharht\textfont|.
+%    \begin{macrocode}
+function print_fam_slot(char)
+  local code = tex.getmathcode(char)
+  local class, family, slot = unpack(code)
+  local result = string.format("%i %i ", family, slot)
+  tex.sprint(cctb.string, result)
+end
+%    \end{macrocode}
+% \end{function}
+%
+% \begin{function}{print_class_fam_slot}
+%   The function \func{print_class_fam_slot} takes one argument which must be a
+%   number.  It interprets the argument as a Unicode code point whose
+%   mathematical code is printed in the form
+%   \meta{class}\texttt{\textvisiblespace}\meta{family}\texttt{\textvisiblespace}\meta{slot},
+%   suitable for the right-hand side of \cmd{\Umathchardef}.
+%    \begin{macrocode}
+function print_class_fam_slot(char)
+  local code = tex.getmathcode(char)
+  local class, family, slot = unpack(code)
+  local result = string.format("%i %i %i ", class, family, slot)
+  tex.sprint(cctb.string, result)
+end
+%</lua>
+%    \end{macrocode}
+% \end{function}
+%
+%
+% \section{Test files}
+%
+% Finally two small test files—but not a real test suite.
+%
+%
+% \subsection{Common definitions}
+%
+%    \begin{macrocode}
+%<*test>
+\documentclass[pagesize=auto]{scrartcl}
+%    \end{macrocode}
+% Only \pkg{xparse} starting with 2008/08/03 has \cmd{\NewDocumentCommand}.
+%    \begin{macrocode}
+\usepackage{xparse}[2008/08/03]
+\usepackage{lualatex-math}
+\ExplSyntaxOn
+%    \end{macrocode}
+%
+% \begin{l3message}{pass}
+%   This message is issued when a test passed.
+%    \begin{macrocode}
+\msg_new:nnn { test } { pass } { #1 }
+%    \end{macrocode}
+% \end{l3message}
+%
+% \begin{macro}{\test_pass:x}
+%   The macro \cmd{\test_pass:x}\marg{text} issues the \msg{pass} message with
+%   description \meta{text}.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \test_pass:x #1 {
+  \msg_info:nnx { test } { pass } { #1 }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{l3message}{fail}
+%   This message is issued when a test failed.
+%    \begin{macrocode}
+\msg_new:nnn { test } { fail } { #1 }
+%    \end{macrocode}
+% \end{l3message}
+%
+% \begin{macro}{\test_fail:x}
+%   The macro \cmd{\test_fail:x}\marg{text} issues the \msg{fail} message with
+%   description \meta{text}.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \test_fail:x #1 {
+  \msg_error:nnx { test } { fail } { #1 }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tl_const:Nx}
+%   We need expanding constants.
+%    \begin{macrocode}
+\cs_generate_variant:Nn \tl_const:Nn { Nx }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\c_test_equal_tl}
+% \begin{macro}{\c_test_not_equal_tl}
+%   Two shorthands for pretty-printing test results.
+%    \begin{macrocode}
+\tl_const:Nx \c_test_equal_tl { \c_space_tl == \c_space_tl }
+\tl_const:Nx \c_test_not_equal_tl { \c_space_tl != \c_space_tl }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\test_equal_pass:nxnx}
+%   The macro \cmd{\test_equal_pass:nxnx}\marg{first expression}\marg{first
+%   value}\marg{second expression}\marg{second value} is called when the two
+%   values arising from the two expressions are equal.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \test_equal_pass:nxnx #1 #2 #3 #4 {
+  \test_pass:x {
+    \exp_not:n { #1 }
+    \c_test_equal_tl
+    #2
+    \c_test_equal_tl
+    #4
+    \c_test_equal_tl
+    \exp_not:n { #3 }
+  }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\test_equal_fail:nxnx}
+%   The macro \cmd{\test_equal_pass:nxnx}\marg{first expression}\marg{first
+%   value}\marg{second expression}\marg{second value} is called when the two
+%   values arising from the two expressions are not equal.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \test_equal_fail:nxnx #1 #2 #3 #4 {
+  \test_fail:x {
+    \exp_not:n { #1 }
+    \c_test_equal_tl
+    #2
+    \c_test_not_equal_tl
+    #4
+    \c_test_equal_tl
+    \exp_not:n { #3 }
+  }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\test_assert_equal:NNNNNnn}
+% \begin{macro}{\test_assert_equal:cccccnn}
+%   The macro \cmd{\test_assert_equal:NNNNNnn}\meta{set command}\meta{use
+%   command}\meta{compare command}\meta{first temporary command}\meta{second
+%   temporary command}\marg{first expression}\marg{second expression} asserts
+%   that the two expressions are equal.  The \meta{set command} must have the
+%   argument specification \texttt{Nn}, the \meta{use command} \texttt{N}, and
+%   the \meta{compare command} \texttt{nNnTF}.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn
+\test_assert_equal:NNNNNnn #1 #2 #3 #4 #5 #6 #7 {
+  #1 #4 { #6 }
+  #1 #5 { #7 }
+  #3 { #4 } = { #5 } {
+    \test_equal_pass:nxnx { #6 } { #2 #4 } { #7 } { #2 #5 }
+  } {
+    \test_equal_fail:nxnx { #6 } { #2 #4 } { #7 } { #2 #5 }
+  }
+}
+\cs_generate_variant:Nn \test_assert_equal:NNNNNnn { ccccc }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\test_assert_equal:nnn}
+%   The macro \cmd{\test_assert_equal:nnn}\marg{data type}\marg{first
+%   expression}\marg{second expression} is a simplified version of
+%   \cmd{\test_assert_equal:NNNNNnn} for data types following the
+%   \hologo{LaTeX3} naming conventions; \meta{data type} must be \texttt{int},
+%   \texttt{dim}, \etc
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \test_assert_equal:nnn #1 #2 #3 {
+  \test_assert_equal:cccccnn
+    { #1 _set:Nn } { #1 _use:N } { #1 _compare:nNnTF }
+    { l_test_tmpa_ #1 } { l_test_tmpb_ #1 } { #2 } { #3 }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l_test_tmpa_int}
+% \begin{macro}{\l_test_tmpb_int}
+%   Scratch registers for numbers.
+%    \begin{macrocode}
+\int_new:N \l_test_tmpa_int
+\int_new:N \l_test_tmpb_int
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\AssertIntEqual}
+%   The command \cmd{\AssertIntEqual}\marg{first expression}\marg{second
+%   expression} asserts that the two integral expressions are equal.
+%    \begin{macrocode}
+\NewDocumentCommand \AssertIntEqual { m m } {
+  \test_assert_equal:nnn { int } { #1 } { #2 }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l_test_tmpa_int}
+% \begin{macro}{\l_test_tmpb_int}
+%   Scratch registers for dimensions.
+%    \begin{macrocode}
+\dim_new:N \l_test_tmpa_dim
+\dim_new:N \l_test_tmpb_dim
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\AssertIntEqual}
+%   The command \cmd{\AssertDimEqual}\marg{first expression}\marg{second
+%   expression} asserts that the two dimension expressions are equal.
+%    \begin{macrocode}
+\NewDocumentCommand \AssertDimEqual { m m } {
+  \test_assert_equal:nnn { dim } { #1 } { #2 }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\AssertMathStyle}
+%   The command \cmd{\AssertMathStyle}\marg{expression} asserts that the
+%   current mathematical style is equal to the value of the integral
+%   \meta{expression}.
+%    \begin{macrocode}
+\NewDocumentCommand \AssertMathStyle { m } {
+  \AssertIntEqual { \luatexmathstyle } { #1 }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\test_assert_cramped:Nx}
+%   The macro \cmd{\test_assert_cramped:Nn}\meta{predicate}\marg{name} asserts
+%   that we are in math mode and that the current style fulfills the
+%   \meta{predicate} (identified by the \meta{name}) which must have the
+%   argument specification \texttt{n}.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \test_assert_cramped:Nx #1 #2 {
+  \int_set:Nn \l_test_tmpa_int { \luatexmathstyle }
+  \bool_if:nTF {
+    \int_compare_p:nNn { \l_test_tmpa_int } > { \c_minus_one }
+    &&
+    #1 { \l_test_tmpa_int }
+  } {
+    \test_pass:x {
+      \exp_not:N \luatexmathstyle
+      \c_test_equal_tl
+      \int_use:N \l_test_tmpa_int
+      \c_space_tl
+      is~ a~ #2~ style
+    }
+  } {
+    \test_fail:x {
+      \exp_not:N \luatexmathstyle
+      \c_test_equal_tl
+      \int_use:N \l_test_tmpa_int
+      \c_space_tl
+      is~ not~ a~ #2~ style
+    }
+  }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\AssertNoncrampedStyle}
+%   The command \cmd{\AssertNoncrampedStyle} asserts that the current
+%   mathematical style is one of the non-cramped styles.
+%    \begin{macrocode}
+\NewDocumentCommand \AssertNoncrampedStyle { } {
+  \test_assert_cramped:Nx \int_if_even_p:n { non-cramped }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\AssertCrampedStyle}
+%   The command \cmd{\AssertCrampedStyle} asserts that the current mathematical
+%   style is one of the cramped styles.
+%    \begin{macrocode}
+\NewDocumentCommand \AssertCrampedStyle { } {
+  \test_assert_cramped:Nx \int_if_odd_p:n { cramped }
+}
+\ExplSyntaxOff
+%</test>
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \subsection{\Hologo{LaTeX2e} kernel}
+%
+% Here we only check whether different fractions and other style-changing
+% commands result in the correct mathematical style.
+%    \begin{macrocode}
+%<*test-kernel>
+\begin{document}
+\begin{displaymath}
+  \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \sqrt{\frac{\AssertMathStyle{3}}{\AssertMathStyle{3}}}
+  \displaystyle
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \luatexcrampeddisplaystyle
+  \frac{\AssertMathStyle{3}}{\AssertMathStyle{3}}
+  \textstyle
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \luatexcrampedtextstyle
+  \frac{\AssertMathStyle{5}}{\AssertMathStyle{5}}
+  \scriptstyle
+  \frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \luatexcrampedscriptstyle
+  \frac{\AssertMathStyle{7}}{\AssertMathStyle{7}}
+\end{displaymath}
+\begin{math}
+  \AssertMathStyle{2} \sqrt{\AssertMathStyle{3}}
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \sqrt{\frac{\AssertMathStyle{5}}{\AssertMathStyle{5}}}
+  \displaystyle
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \luatexcrampeddisplaystyle
+  \frac{\AssertMathStyle{3}}{\AssertMathStyle{3}}
+  \textstyle
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \luatexcrampedtextstyle
+  \frac{\AssertMathStyle{5}}{\AssertMathStyle{5}}
+  \scriptstyle
+  \frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \luatexcrampedscriptstyle
+  \frac{\AssertMathStyle{7}}{\AssertMathStyle{7}}
+\end{math}
+\end{document}
+%</test-kernel>
+%    \end{macrocode}
+%
+%
+% \subsection{\pkg{amsmath} and \pkg{mathtools}}
+%
+% Since \pkg{mathtools} loads \pkg{amsmath} anyway, we test both in one file.
+% \begin{macro}{\testbox}
+%   First a scratch box register.
+%    \begin{macrocode}
+%<*test-amsmath>
+\newsavebox{\testbox}
+%    \end{macrocode}
+% \end{macro}
+% We set the mathematical code for the minus sign to some arbitrary Unicode
+% value to test whether the load-time patch works.
+%    \begin{macrocode}
+\luatexUmathcode`\-="2 "33 "44444 \relax
+\usepackage{amsmath}
+\AssertIntEqual{\luatexUmathcode`\-}{"33444444}
+\makeatletter
+\AssertIntEqual{\std@minus}{"33444444}
+\makeatother
+\usepackage{mathtools}
+%    \end{macrocode}
+% The same for the document begin hook.
+%    \begin{macrocode}
+\luatexUmathcode`\="5 "66 "77777 \relax
+\begin{document}
+\AssertIntEqual{\luatexUmathcode`\=}{"66A77777}
+\makeatletter
+\AssertIntEqual{\std@equal}{"66A77777}
+\makeatother
+%    \end{macrocode}
+% Here we test whether the strut box has the correct height and depth.
+%    \begin{macrocode}
+\sbox{\testbox}{$($} % )
+\makeatletter
+\AssertDimEqual{\ht\Mathstrutbox@}{\ht\testbox}
+\AssertDimEqual{\dp\Mathstrutbox@}{\dp\testbox}
+\makeatother
+%    \end{macrocode}
+% Here we test for the various \pkg{amsmath} features that have to be patched:
+% sub-arrays and various kind of fraction-like objects.  The \cmd{\substack}
+% command and \env{subarray} environment aren’t really tested since it is hard
+% to check whether the outcome looks right in an automated way.  All tests are
+% done in both inline and display mode.
+%    \begin{macrocode}
+\begin{equation*}
+  \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
+  \sum_{
+    \substack{\frac12 \\ \frac34 \\ \frac56}
+  }
+  \sum_{
+    \begin{subarray}{l} \frac12 \\ \frac34 \\ \frac56 \end{subarray}
+  }
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dfrac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tfrac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \binom{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\binom{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dbinom{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tbinom{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{}{}{}{}{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \genfrac{<}{/}{0pt}{0}{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \genfrac{}{}{}{1}{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{|}{]}{4pt}{2}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \genfrac{}{}{}{3}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+\end{equation*}
+\begin{math}
+  \AssertMathStyle{2} \sqrt{\AssertMathStyle{3}}
+  \sum_{
+    \substack{\frac12 \\ \frac34 \\ \frac56}
+  }
+  \sum_{
+    \begin{subarray}{l} \frac12 \\ \frac34 \\ \frac56 \end{subarray}
+  }
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dfrac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tfrac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \binom{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  a^{\binom{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dbinom{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tbinom{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{}{}{}{}{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{<}{/}{0pt}{0}{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \genfrac{}{}{}{1}{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{|}{]}{4pt}{2}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \genfrac{}{}{}{3}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+\end{math}
+%    \end{macrocode}
+% Since \pkg{mathtools}’ \cmd{\cramped} command uses \cmd{\mathchoice}, we
+% cannot test for a single mathematical style since all of them are executed;
+% instead, we just verify that all styles encountered are cramped.
+%    \begin{macrocode}
+\begin{equation*}
+  \AssertMathStyle{0}
+  a^{\AssertMathStyle{4} a}
+  \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+  a^{
+    \AssertMathStyle{4}
+    a^a
+    \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+    a^a
+    \AssertMathStyle{4}
+  }
+  a^{
+    a^{
+      \AssertMathStyle{6}
+      a^a
+      \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+      a^a
+      \AssertMathStyle{6}
+    }
+  }
+  a^{\AssertMathStyle{4} a}
+  \AssertMathStyle{0}
+\end{equation*}
+\begin{math}
+  \AssertMathStyle{2}
+  a^{\AssertMathStyle{4} a}
+  \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+  a^{
+    \AssertMathStyle{4}
+    a^a
+    \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+    a^a
+    \AssertMathStyle{4}
+  }
+  a^{
+    a^{
+      \AssertMathStyle{6}
+      a^a
+      \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+      a^a
+      \AssertMathStyle{6}
+    }
+  }
+  a^{\AssertMathStyle{4} a}
+  \AssertMathStyle{2}
+\end{math}
+\end{document}
+%</test-amsmath>
+%    \end{macrocode}
 %
 % \Finale
 \endinput
