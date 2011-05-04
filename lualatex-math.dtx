@@ -116,13 +116,15 @@
 % that by themselves overwrite commands patched by this package, bad things may
 % happen, as it is usual with \hologo{LaTeX}.
 %
-% One user-visible change is that the new \cmd{\mathstyle} primitive (usually
-% called \cmd{\luatexmathstyle} in \hologo{LuaLaTeX}) should work in all cases
-% after the \thispackage package has been loaded, provided you use the
-% high-level macros \cmd{\frac}, \cmd{\binom}, and \cmd{\genfrac}.  The
-% fraction-like \hologo{TeX} primitives like \cmd{\over} or
-% \cmd{\atopwithdelims} and the \hologo{plainTeX} leftovers like \cmd{\brack}
-% or \cmd{\choose} cannot be patched, and you shouldn’t use them.
+% One user-visible change is that the new
+% \DescribeMacros{\mathstyle\luatexmathstyle}\cmd{\mathstyle} primitive
+% (usually called \cmd{\luatexmathstyle} in \hologo{LuaLaTeX}) should work in
+% all cases after the \thispackage package has been loaded, provided you use
+% the high-level macros \DescribeMacros{\frac\binom\genfrac}\cmd{\frac},
+% \cmd{\binom}, and \cmd{\genfrac}.  The fraction-like \hologo{TeX} primitives
+% like \cmd{\over} or \cmd{\atopwithdelims} and the \hologo{plainTeX} leftovers
+% like \cmd{\brack} or \cmd{\choose} cannot be patched, and you shouldn’t use
+% them.
 %
 % \StopEventually{}
 %
