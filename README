@@ -1,2 +1,37 @@
 The ``lualatex-math`` package
 =============================
+
+This package patches a few commands of the LaTeX 2ε kernel and the ``amsmath``
+and ``mathtools`` packages to be more compatible with the LuaTeX engine.  It is
+only meaningful if you compile your documents with LuaLaTeX.
+
+
+License
+-------
+
+This material is subject to the LaTeX Project Public License, either
+version 1.3c of this license or (at your option) any later version.  See
+http://www.latex-project.org/lppl/ for the details of that license.
+
+
+Installation
+------------
+
+Copy the files ``lualatex-math.sty`` and ``lualatex-math.lua`` to a place where
+TeX can find them.  The documentation is contained in the file
+``lualatex-math.pdf``.
+
+To produce the runtime files from the Docstrip source, run ``make``.  To
+produce the PDF manual, run ``make pdf``.  To produce and compile a few test
+files, run ``make check``.  To install the runtime files in your home TEXMF
+tree, run ``make install``.  To install the PDF manual in your home TEXMF tree,
+run ``make install-pdf``.  The package includes an AucTeX style file which will
+be installed in ``~/.emacs.d``.
+
+
+Usage
+-----
+
+Include the package via ``\usepackage{lualatex-math}``.  The package has no
+options and no public interface; it applies the appropriate fixes
+automatically.  See ``lualatex-math.pdf`` for details.
