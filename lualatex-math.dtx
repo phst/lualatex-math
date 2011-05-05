@@ -21,8 +21,6 @@
 \usepackage{lualatex-math}
 \newcommand*{\thispackage}{\textsf{lualatex-math}\xspace}
 
-\setlength{\overfullrule}{5pt}
-
 \begin{document}
 
 \DocInput{lualatex-math.dtx}
@@ -33,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{0}
+% \CheckSum{721}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -93,7 +91,9 @@
 % possible, the \thispackage package patches only the \hologo{LaTeX2e} kernel
 % and a small number of popular packages.  In general, this package should be
 % regarded as a temporary kludge that should be removed once the math-related
-% packages are updated to be usable with \hologo{LuaTeX}.
+% packages are updated to be usable with \hologo{LuaTeX}.  By its very nature,
+% the package is likely to cause problems; in such cases, please refer to the
+% issue tracker\footnote{\url{https://github.com/phst/lualatex-math/issues}}.
 %
 %
 % \section{Interface}

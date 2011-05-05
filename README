@@ -35,3 +35,8 @@ Usage
 Include the package via ``\usepackage{lualatex-math}``.  The package has no
 options and no public interface; it applies the appropriate fixes
 automatically.  See ``lualatex-math.pdf`` for details.
+
+If you encounter any issues, please report them by means of the `issue
+tracker`_.
+
+.. _issue tracker: https://github.com/phst/lualatex-math/issues
