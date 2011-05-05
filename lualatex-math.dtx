@@ -748,7 +748,6 @@ end
 % Only \pkg{xparse} starting with 2008/08/03 has \cmd{\NewDocumentCommand}.
 %    \begin{macrocode}
 \usepackage{xparse}[2008/08/03]
-\usepackage{lualatex-math}
 \ExplSyntaxOn
 %    \end{macrocode}
 %
@@ -992,6 +991,7 @@ end
 % commands result in the correct mathematical style.
 %    \begin{macrocode}
 %<*test-kernel>
+\usepackage{lualatex-math}
 \begin{document}
 \begin{displaymath}
   \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
@@ -1041,6 +1041,7 @@ end
 %   First a scratch box register.
 %    \begin{macrocode}
 %<*test-amsmath>
+\usepackage{lualatex-math}
 \newsavebox{\testbox}
 %    \end{macrocode}
 % \end{macro}
@@ -1175,6 +1176,36 @@ end
 \end{math}
 \end{document}
 %</test-amsmath>
+%    \end{macrocode}
+%
+%
+% \subsection{\pkg{unicode-math}}
+%
+% This test file loads both \pkg{amsmath} and \pkg{unicode-math}.  The latter
+% package contains fixes that somewhat overlap with ours.  We have to take care
+% in all packages that no attempt is made to patch a sinlge macro twice.
+% Therefore we treat warnings (that occur when trying to patch a macro with an
+% unknown meaning) as errors here.
+%
+%    \begin{macrocode}
+%<*test-unicode>
+\ExplSyntaxOn
+\msg_redirect_class:nn { warning } { error }
+\ExplSyntaxOff
+\usepackage{amsmath}
+\usepackage{unicode-math}[2011/05/05]
+\setmathfont{XITS Math}
+\usepackage{lualatex-math}
+\begin{document}
+\begin{equation*}
+  \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dfrac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tfrac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+\end{equation*}
+\end{document}
+%</test-unicode>
 %    \end{macrocode}
 %
 % \Finale

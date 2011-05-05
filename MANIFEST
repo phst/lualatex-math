@@ -14,4 +14,5 @@ lualatex-math.sty
 lualatex-math.lua
 test-kernel.tex
 test-amsmath.tex
+test-unicode.tex
 lualatex-math.pdf
