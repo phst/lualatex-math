@@ -8,7 +8,10 @@ lualatex-math.dtx
 lualatex-math.ins
 lualatex-math.el
 
-and the derived file
+and the derived files
 
 lualatex-math.sty
+lualatex-math.lua
+test-kernel.tex
+test-amsmath.tex
 lualatex-math.pdf
