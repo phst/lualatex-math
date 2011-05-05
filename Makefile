@@ -18,6 +18,7 @@ INSTALL := install
 INSTALL_PROGRAM := $(INSTALL) -c -m 755
 INSTALL_DATA := $(INSTALL) -c -m 644
 
+ZIP := zip -v
 MKTEXLSR := mktexlsr
 TEX := tex
 LATEX := lualatex
@@ -53,6 +54,8 @@ changes_src := $(name).glo
 changes_dest := $(name).gls
 changes_log := $(name).glg
 changes_sty := gglo.ist
+ctan_arch := $(name).zip
+ctan_files := README MANIFEST Makefile $(source) $(driver) $(destination) $(test_src) $(manual) $(auctex_style)
 
 
 all: $(destination) $(auctex_style)
@@ -62,6 +65,8 @@ check: $(tests_dest)
 pdf: $(manual)
 
 complete: all check pdf
+
+ctan: $(ctan_arch)
 
 install: all
 	$(INSTALL) -d $(destdir)
@@ -90,5 +95,8 @@ $(manual): $(source) $(destination)
 	$(LATEX) $(LATEXFLAGS_DRAFT) $<
 	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
-.PHONY: all check pdf complete install install-pdf install-complete
+$(ctan_arch): $(ctan_files)
+	$(ZIP) $@ $^
+
+.PHONY: all check pdf complete ctan install install-pdf install-complete
 .SUFFIXES:

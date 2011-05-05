@@ -2,6 +2,7 @@ auto/
 .DS_Store
 *~
 *.tmp
+*.zip
 *.html
 *.pdf
 *.sty
