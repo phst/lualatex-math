@@ -44,6 +44,7 @@ destination := $(dest_sty) $(dest_lua)
 tests := test-kernel test-amsmath test-unicode
 tests_src := $(addsuffix .tex, $(tests))
 tests_dest := $(addsuffix .pdf, $(tests))
+class := $(shell kpsewhich phst-doc.cls)
 manual := $(name).pdf
 auctex_style := $(name).el
 index_src := $(name).idx
@@ -55,7 +56,7 @@ changes_dest := $(name).gls
 changes_log := $(name).glg
 changes_sty := gglo.ist
 ctan_arch := $(name).zip
-ctan_files := README MANIFEST Makefile $(source) $(driver) $(destination) $(test_src) $(manual) $(auctex_style)
+ctan_files := README MANIFEST Makefile $(source) $(driver) $(destination) $(test_src) $(class) $(manual) $(auctex_style)
 
 
 all: $(destination) $(auctex_style)
@@ -96,7 +97,7 @@ $(manual): $(source) $(destination)
 	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
 $(ctan_arch): $(ctan_files)
-	$(ZIP) $@ $^
+	$(ZIP) -j $@ $^
 
 .PHONY: all check pdf complete ctan install install-pdf install-complete
 .SUFFIXES:
