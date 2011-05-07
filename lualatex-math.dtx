@@ -68,19 +68,19 @@
 % \Hologo{LuaTeX} brings major improvements to all areas of \hologo{TeX}
 % typesetting and programming.  They are made available through new primitives
 % or the embedded Lua interpreter, and combining them with existing
-% \hologo{LaTeX2e} package is not a task the average \hologo{LaTeX} user should
-% have to care about.  Therefore a multitude of \hologo{LaTeX2e} packages have
-% been written to bridge the gap between documents and the new features.  The
-% \thispackage package focuses on the additional possibilities for mathematical
-% typesetting.  The most eminent of the new features is the ability to use
-% Unicode and OpenType fonts, as provided by \Robertson’s \pkg{unicode-math}
-% package.  However, there is a smaller group of changes unrelated to Unicode:
-% these are to be dealt with in this package.  While in principle most
-% \hologo{TeX} documents written for traditional engines should work just fine
-% with \hologo{LuaTeX}, there is a small number of breaking changes that
-% require the attention of package authors.  The \thispackage package tries to
-% fix some of the issues encountered while porting traditional macro packages
-% to \hologo{LuaLaTeX}.
+% \hologo{LaTeX2e} packages is not a task the average \hologo{LaTeX} user
+% should have to care about.  Therefore a multitude of \hologo{LaTeX2e}
+% packages have been written to bridge the gap between documents and the new
+% features.  The \thispackage package focuses on the additional possibilities
+% for mathematical typesetting.  The most eminent of the new features is the
+% ability to use Unicode and OpenType fonts, as provided by \Robertson’s
+% \pkg{unicode-math} package.  However, there is a smaller group of changes
+% unrelated to Unicode: these are to be dealt with in this package.  While in
+% principle most \hologo{TeX} documents written for traditional engines should
+% work just fine with \hologo{LuaTeX}, there is a small number of breaking
+% changes that require the attention of package authors.  The \thispackage
+% package tries to fix some of the issues encountered while porting traditional
+% macro packages to \hologo{LuaLaTeX}.
 %
 % The decision to write patches for existing macro packages should not be made
 % lightly: monkey patching done by somebody different from the original package
@@ -736,7 +736,7 @@ end
 %
 % \section{Test files}
 %
-% Finally two small test files—but not a real test suite.
+% Finally three small test files—but not a real test suite.
 %
 %
 % \subsection{Common definitions}
@@ -1183,7 +1183,7 @@ end
 %
 % This test file loads both \pkg{amsmath} and \pkg{unicode-math}.  The latter
 % package contains fixes that somewhat overlap with ours.  We have to take care
-% in all packages that no attempt is made to patch a sinlge macro twice.
+% in all packages that no attempt is made to patch a single macro twice.
 % Therefore we treat warnings (that occur when trying to patch a macro with an
 % unknown meaning) as errors here.
 %
