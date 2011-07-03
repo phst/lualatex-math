@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{721}
+% \CheckSum{798}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -109,12 +109,12 @@
 % \pkg{unicode-math} package; the fixes provided here are valid for both
 % Unicode and legacy math typesetting.
 %
-% Currently patches for the \hologo{LaTeX2e} kernel and the \pkg{amsmath} and
-% \pkg{mathtools} packages are provided.  It is not relevant whether you load
-% these packages before or after \thispackage.  They should work as expected
-% (and ideally you shouldn’t notice anything), but if you load other packages
-% that by themselves overwrite commands patched by this package, bad things may
-% happen, as it is usual with \hologo{LaTeX}.
+% Currently patches for the \hologo{LaTeX2e} kernel and the \pkg{amsmath},
+% \pkg{mathtools} and \pkg{icomma} packages are provided.  It is not relevant
+% whether you load these packages before or after \thispackage.  They should
+% work as expected (and ideally you shouldn’t notice anything), but if you load
+% other packages that by themselves overwrite commands patched by this package,
+% bad things may happen, as it is usual with \hologo{LaTeX}.
 %
 % One user-visible change is that the new
 % \DescribeMacros{\mathstyle\luatexmathstyle}\cmd{\mathstyle} primitive
@@ -137,7 +137,7 @@
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2011/02/17]
-\ProvidesExplPackage{lualatex-math}{2011/05/05}{0.1}%
+\ProvidesExplPackage{lualatex-math}{2011/07/03}{0.2}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -237,6 +237,22 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\luatexUmathcode}
+% \begin{macro}{\luatexUmathcodenum}
+% \begin{macro}{\luatexUmathchardef}
+%   We need the extended versions of \cmd{\mathcode} and \cmd{\mathchardef}.
+%   The command \cmd{\luatexbase@ensure@primitive}\marg{name} makes sure that
+%   the \hologo{LuaTeX} primitive \cs{\meta{name}} is available under the
+%   qualified name \cs{luatex\meta{name}}.
+%    \begin{macrocode}
+\luatexbase@ensure@primitive { Umathcode }
+\luatexbase@ensure@primitive { Umathcodenum }
+\luatexbase@ensure@primitive { Umathchardef }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
 % \begin{macro}{\lltxmath_patch:NNnnn}
 % \begin{macro}{\lltxmath_patch:cNnnn}
 %   The macro \cmd{\lltxmath_patch:NNnnn}\meta{command}\meta{factory
@@ -273,6 +289,24 @@
 \cs_generate_variant:Nn \lltxmath_patch:NNnnn { c }
 %    \end{macrocode}
 % \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\lltxmath_set_mathchar:NN}
+%   The macro \cmd{\lltxmath_set_mathchar:NN}\meta{control
+%   sequence}\meta{token} defines the \meta{control sequence} as an extended
+%   mathematical character shorthand whose mathematical code is given by the
+%   mathematical code of the character \texttt{\textasciigrave}\meta{token}.
+%   Since there is no \cmd{\Umathcharnumdef} primitive, we have to extract the
+%   class, family, and slot numbers separately.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \lltxmath_set_mathchar:NN #1 #2 {
+  \luatexUmathchardef #1
+  \lua_now:x {
+    lualatex.math.print_class_fam_slot( \int_eval:n { `#2 } )
+  }
+  \scan_stop:
+}
+%    \end{macrocode}
 % \end{macro}
 %
 %
@@ -333,16 +367,6 @@
 %   \cmd{\Ustack} primitive.
 % \end{itemize}
 %
-% \begin{macro}{\luatexUmathcodenum}
-% \begin{macro}{\luatexUmathchardef}
-%   We need the extended versions of \cmd{\mathcode} and \cmd{\mathchardef}.
-%    \begin{macrocode}
-\luatexbase@ensure@primitive { Umathcodenum }
-\luatexbase@ensure@primitive { Umathchardef }
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-%
 % \begin{macro}{\luatexalignmark}
 % \begin{macro}{\luatexUstartmath}
 % \begin{macro}{\luatexUstopmath}
@@ -382,24 +406,6 @@
 \int_const:Nn \c_lltxmath_std_equal_mathcode_int { "303D }
 %    \end{macrocode}
 % \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\lltxmath_set_mathchar:NN}
-%   The macro \cmd{\lltxmath_set_mathchar:NN}\meta{control
-%   sequence}\meta{token} defines the \meta{control sequence} as an extended
-%   mathematical character shorthand whose mathematical code is given by the
-%   mathematical code of the character \texttt{\textasciigrave}\meta{token}.
-%   Since there is no \cmd{\Umathcharnumdef} primitive, we have to extract the
-%   class, family, and slot numbers separately.
-%    \begin{macrocode}
-\cs_new_protected_nopar:Npn \lltxmath_set_mathchar:NN #1 #2 {
-  \luatexUmathchardef #1
-  \lua_now:x {
-    lualatex.math.print_class_fam_slot( \int_eval:n { `#2 } )
-  }
-  \scan_stop:
-}
-%    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\lltxmath_char_dim:NN}
@@ -672,6 +678,30 @@
     }
   }
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \subsection{\pkg{icomma}}
+%
+% \changes{v0.2}{2011/07/03}{Added patch for the \pkg{icomma} package}
+% The \pkg{icomma} package uses |\mathchardef| to save the mathematical code of
+% the comma character.  This breaks for Unicode fonts.  The incompatibility was
+% noticed by
+% \Breitfeld.\footnote{\url{https://groups.google.com/d/topic/de.comp.text.tex/Cputk-AJS5I/discussion}}
+%
+% \begin{macro}{\mathcomma}
+%   \pkg{icomma} defines the mathemathical character shorthand \cmd{\icomma} at
+%   the beginning of the document, therefore we again patch
+%   \cmd{\@begindocumenthook}.
+%    \begin{macrocode}
+\AtEndOfPackageFile * { icomma } {
+  \tl_replace_in:Nnn \@begindocumenthook {
+    \mathchardef \mathcomma \mathcode `\,
+  } {
+    \lltxmath_set_mathchar:NN \mathcomma \,
+  }
+}
 %</package>
 %    \end{macrocode}
 % \end{macro}
@@ -736,7 +766,7 @@ end
 %
 % \section{Test files}
 %
-% Finally three small test files—but not a real test suite.
+% Finally five small test files—but not a real test suite.
 %
 %
 % \subsection{Common definitions}
@@ -748,6 +778,7 @@ end
 % Only \pkg{xparse} starting with 2008/08/03 has \cmd{\NewDocumentCommand}.
 %    \begin{macrocode}
 \usepackage{xparse}[2008/08/03]
+\usepackage{luacode}
 \ExplSyntaxOn
 %    \end{macrocode}
 %
@@ -979,6 +1010,113 @@ end
 \NewDocumentCommand \AssertCrampedStyle { } {
   \test_assert_cramped:Nx \int_if_odd_p:n { cramped }
 }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l_test_tmpa_box}
+% \begin{macro}{\l_test_tmpb_box}
+%   Scratch registers for box constructions.
+%    \begin{macrocode}
+\box_new:N \l_test_tmpa_box
+\box_new:N \l_test_tmpb_box
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{function}{contains_space}
+%   The function \func{contains_space}|(head, width)| returns |true| if the
+%   node list starting at |head| or any of its sublists contain a glue or kern
+%   node of width |width| (or any glue or kern node if |width| is |nil|).
+%    \begin{macrocode}
+\begin{luacode*}
+function contains_space(head, width)
+  for n in node.traverse(head) do
+    local id = n.id
+    if id == 10 or id == 11 then
+      if width then
+        if (id == 10 and n.spec.width == width)
+        or (id == 11 and n.kern == width) then
+          return true
+        end
+      else
+        return true
+      end
+    elseif id == 0 or id == 1 then
+      if contains_space(n.head, width) then
+        return true
+      end
+    end
+  end
+  return false
+end
+\end{luacode*}
+%    \end{macrocode}
+% \end{function}
+%
+% \begin{macro}{\AssertNoSpace}
+%   The command \cmd{\AssertNoSpace}\marg{text} asserts that the node list that
+%   is the result of typesetting \meta{text} contains no glue or kern nodes.
+%    \begin{macrocode}
+\NewDocumentCommand \AssertNoSpace { m } {
+  \hbox_set:Nn \l_test_tmpa_box { #1 }
+  \int_if_odd:nTF {
+    \lua_now:x {
+      local~ b = tex.getbox(\int_use:N \l_test_tmpa_box)
+      if~ contains_space(b.head) then~
+        tex.sprint("0")
+      else~
+        tex.sprint("1")
+      end
+    }
+  } {
+    \test_pass:x {
+      \tl_to_str:n { #1 } ~
+      contains~ no~ skip~ or~ kern~ node
+    }
+  } {
+    \test_fail:x {
+      \tl_to_str:n { #1 } ~
+      contains~ a~ skip~ or~ kern~ node
+    }
+  }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\AssertMuSpace}
+%   The command \cmd{\AssertMuSpace}\marg{text}\marg{muskip} asserts that the
+%   node list that is the result of typesetting \meta{text} contains at least
+%   one glue or kern node of with \meta{muskip}.
+%    \begin{macrocode}
+\makeatletter
+\NewDocumentCommand \AssertMuSpace { m m } {
+  \hbox_set:Nn \l_test_tmpa_box { #1 }
+  \hbox_set:Nn \l_test_tmpb_box { $ \mskip #2 \m@th $ }
+  \int_if_odd:nTF {
+    \lua_now:x {
+      local~ b = tex.getbox(\int_use:N \l_test_tmpa_box)
+      local~ s = tex.getbox(\int_use:N \l_test_tmpb_box)
+      if~ contains_space(b.head, s.width) then~
+        tex.sprint("1")
+      else~
+        tex.sprint("0")
+      end
+    }
+  } {
+    \test_pass:x {
+      \tl_to_str:n { #1 } ~
+      contains~ a~ skip~ or~ kern~ node~ of~ width~
+      \tl_to_str:n { #2 }
+    }
+  } {
+    \test_fail:x {
+      \tl_to_str:n { #1 } ~
+      contains~ no~ skip~ or~ kern~ node~ of~ width~
+      \tl_to_str:n { #2 }
+    }
+  }
+}
+\makeatother
 \ExplSyntaxOff
 %</test>
 %    \end{macrocode}
@@ -1206,6 +1344,46 @@ end
 \end{equation*}
 \end{document}
 %</test-unicode>
+%    \end{macrocode}
+%
+%
+% \subsection{\pkg{icomma} without \pkg{unicode-math}}
+%
+% This test file loads only \pkg{icomma} to test whether our patch works for
+% Computer Modern.
+%
+%    \begin{macrocode}
+%<*test-icomma>
+\usepackage{lualatex-math}
+\usepackage{icomma}
+\begin{document}
+$1,234 \; (x, y)$
+\AssertNoSpace{$1,234$}
+\AssertMuSpace{$(x, y)$}{\thinmuskip}
+\AssertIntEqual{\mathcomma}{"1C0003B}
+\end{document}
+%</test-icomma>
+%    \end{macrocode}
+%
+%
+% \subsection{\pkg{icomma} with \pkg{unicode-math}}
+%
+% This test file loads both \pkg{icomma} and \pkg{unicode-math} to test whether
+% they interact well.
+%
+%    \begin{macrocode}
+%<*test-icomma-unicode>
+\usepackage{unicode-math}[2011/05/05]
+\setmathfont{XITS Math}
+\usepackage{lualatex-math}
+\usepackage{icomma}
+\begin{document}
+$1,234 \; (x, y)$
+\AssertNoSpace{$1,234$}
+\AssertMuSpace{$(x, y)$}{\thinmuskip}
+\AssertIntEqual{\mathcomma}{"0C0002C}
+\end{document}
+%</test-icomma-unicode>
 %    \end{macrocode}
 %
 % \Finale
