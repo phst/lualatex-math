@@ -23,10 +23,15 @@ TeX can find them.  The documentation is contained in the file
 
 To produce the runtime files from the Docstrip source, run ``make``.  To
 produce the PDF manual, run ``make pdf``.  To produce and compile a few test
-files, run ``make check``.  To install the runtime files in your home TEXMF
-tree, run ``make install``.  To install the PDF manual in your home TEXMF tree,
-run ``make install-pdf``.  The package includes an AucTeX style file which will
-be installed in ``~/.emacs.d``.
+files, run ``make check``.  To compile the manual you’ll need my `custom
+documentation class`_.
+
+To install the runtime files in your home TEXMF tree, run ``make install``.  To
+install the PDF manual in your home TEXMF tree, run ``make install-pdf``.  The
+package includes an AucTeX style file which will be installed in
+``~/.emacs.d``.
+
+.. _custom documentation class: https://github.com/phst/phst-doc
 
 
 Usage
