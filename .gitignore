@@ -22,3 +22,4 @@ test-*.tex
 *.gls
 *.glg
 *.synctex.gz
+texmf-dist/

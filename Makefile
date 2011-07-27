@@ -55,8 +55,17 @@ changes_src := $(name).glo
 changes_dest := $(name).gls
 changes_log := $(name).glg
 changes_sty := gglo.ist
+tds_arch := $(name).tds.zip
+tds_root := texmf-dist
+tds_destdir := $(tds_root)/tex/$(branch)
+tds_docdir := $(tds_root)/doc/$(branch)
+tds_srcdir := $(tds_root)/source/$(branch)
+tds_dest := $(addprefix $(tds_destdir)/, $(destination))
+tds_doc := $(addprefix $(tds_docdir)/, $(manual))
+tds_source := $(addprefix $(tds_srcdir)/, $(source) $(driver))
+tds_files := $(tds_dest) $(tds_doc) $(tds_source)
 ctan_arch := $(name).zip
-ctan_files := README MANIFEST Makefile $(source) $(driver) $(destination) $(test_src) $(class) $(manual) $(auctex_style)
+ctan_files := $(tds_arch) README MANIFEST Makefile $(source) $(driver) $(destination) $(test_src) $(class) $(manual) $(auctex_style)
 
 
 all: $(destination) $(auctex_style)
@@ -95,6 +104,13 @@ $(manual): $(source) $(destination)
 	$(MAKEINDEX) -s $(changes_sty) -o $(changes_dest) -t $(changes_log) $(changes_src)
 	$(LATEX) $(LATEXFLAGS_DRAFT) $<
 	$(LATEX) $(LATEXFLAGS_FINAL) $<
+
+$(tds_destdir)/% $(tds_docdir)/% $(tds_srcdir)/%: %
+	$(INSTALL) -d $(dir $@)
+	$(INSTALL_DATA) $< $(dir $@)
+
+$(tds_arch): $(tds_files)
+	$(ZIP) -p $@ $^
 
 $(ctan_arch): $(ctan_files)
 	$(ZIP) -j $@ $^
