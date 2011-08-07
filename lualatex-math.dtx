@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{798}
+% \CheckSum{885}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -137,7 +137,7 @@
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2011/02/17]
-\ProvidesExplPackage{lualatex-math}{2011/07/03}{0.2}%
+\ProvidesExplPackage{lualatex-math}{2011/08/07}{0.3}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -175,6 +175,22 @@
 \msg_new:nnn { lualatex-math } { luatex-required } {
   The~ lualatex-math~ package~ requires~ LuaTeX. \\
   I~ will~ stop~ loading~ now.
+}
+%    \end{macrocode}
+% \end{l3message}
+%
+% \begin{l3message}{different-meanings}
+%   Issued when two control sequences have different meanings, but should not.
+%    \begin{macrocode}
+\msg_new:nnnn { lualatex-math } { different-meanings } {
+  I've~ expected~ the~ control~ sequences \\
+  #1~ and~ #3 \\
+  to~ have~ the~ same~ meaning,~ but~ their~ meanings~ are~ different.
+} {
+  The~ meaning~ of~ #1~ is: \\
+  #2 \\
+  The~ meaning~ of~ #3~ is: \\
+  #4
 }
 %    \end{macrocode}
 % \end{l3message}
@@ -253,6 +269,22 @@
 % \end{macro}
 % \end{macro}
 %
+% \begin{macro}{\lltxmath_assert_eq:NN}
+%   The macro \cmd{\lltxmath_assert_eq:NN}\meta{first command}\meta{second
+%   command} tests whether the control sequences \meta{first command} and
+%   \meta{second command} have the same meaning, and prints an error message if
+%   they do not.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \lltxmath_assert_eq:NN #1 #2 {
+  \cs_if_eq:NNF #1 #2 {
+    \msg_error:nnxxxx { lualatex-math } { different-meanings }
+      { \token_to_str:N #1 } { \token_to_meaning:N #1 }
+      { \token_to_str:N #2 } { \token_to_meaning:N #2 }
+  }
+}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\lltxmath_patch:NNnnn}
 % \begin{macro}{\lltxmath_patch:cNnnn}
 %   The auxiliary macro \cmd{\lltxmath_patch:NNnnn}\meta{command}\meta{factory
@@ -311,6 +343,37 @@
 %
 %
 % \subsection{\Hologo{LaTeX2e} kernel}
+%
+% \changes{v0.3}{2011/08/07}{Patched math group allocation to gain access to
+% all families}
+% In \hologo{LuaTeX}, we have 256 math families at our disposal.  Therefore we
+% modify the \hologo{LaTeX} allocation macros \cmd{\newfam} and
+% \cmd{\new@mathgroup} accordingly.
+%
+% First we test whether \cmd{\newfam} and \cmd{\new@mathgroup} are equal.
+%    \begin{macrocode}
+\lltxmath_assert_eq:NN \newfam \new@mathgroup
+%    \end{macrocode}
+%
+% \begin{macro}{\new@mathgroup}
+%   It is enough to modify the maximum number of families known to the
+%   allocation system; the macro \cmd{\alloc@} takes care of the rest.  This
+%   would work even if the \pkg{etex} package weren’t loaded.
+%    \begin{macrocode}
+\lltxmath_patch:NNnnn \new@mathgroup \cs_set_nopar:Npn { } {
+  \alloc@ 8 \mathgroup \chardef \sixt@@n
+} {
+  \alloc@ 8 \mathgroup \chardef \c_two_hundred_fifty_six
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\newfam}
+%   We have to reset \cmd{\newfam} to equal \cmd{\new@mathgroup}.
+%    \begin{macrocode}
+\cs_set_eq:NN \newfam \new@mathgroup
+%    \end{macrocode}
+% \end{macro}
 %
 % \Hologo{LuaTeX} enables access to the current mathematical style via the
 % \cmd{\mathstyle} primitive.  For this to work, fraction-like constructs (\eg,
@@ -766,7 +829,7 @@ end
 %
 % \section{Test files}
 %
-% Finally five small test files—but not a real test suite.
+% Finally six small test files—but not a real test suite.
 %
 %
 % \subsection{Common definitions}
@@ -1124,12 +1187,68 @@ end
 % \end{macro}
 %
 %
-% \subsection{\Hologo{LaTeX2e} kernel}
+% \subsection{\Hologo{LaTeX2e} kernel, allocation of math families}
+%
+% \changes{v0.3}{2011/08/07}{Added test file for modified family allocation
+% scheme}
+% The \hologo{LaTeX2e} kernel itself allocates four families (also known as
+% \enquote{math groups} in \hologo{LaTeX} parlance).  Therefore we should still
+% be able to allocate 252 families.  We do this alternately with \cmd{\newfam},
+% \cmd{\new@mathgroup} and \cmd{\DeclareSymbolFont}.
+%    \begin{macrocode}
+%<*test-kernel-alloc>
+\usepackage{lualatex-math}
+\makeatletter
+\ExplSyntaxOn
+\prg_stepwise_inline:nnnn { \c_four } { \c_one } {
+  \c_two_hundred_fifty_five - \c_one
+} {
+  \prg_case_int:nnn { \int_mod:nn { #1 } { \c_three } } {
+    { \c_zero } {
+      \chk_if_free_cs:N \g_test_family_int
+      \newfam \g_test_family_int
+      \AssertIntEqual { \g_test_family_int } { #1 }
+      \cs_undefine:N \g_test_family_int
+    }
+    { \c_one } {
+      \chk_if_free_cs:N \g_test_mathgroup_int
+      \new@mathgroup \g_test_mathgroup_int
+      \AssertIntEqual { \g_test_mathgroup_int } { #1 }
+      \cs_undefine:N \g_test_mathgroup_int
+    }
+    { \c_two } {
+      \DeclareSymbolFont { Test #1 } { OT1 } { cmr } { m } { n }
+      \exp_args:Nc \AssertIntEqual { sym Test #1 } { #1 }
+    }
+  } {
+    \test_fail:x { This~ cannot~ happen }
+  }
+}
+\DeclareSymbolFont { Test 255 } { OT1 } { cmr } { bx } { it }
+\DeclareSymbolFontAlphabet { \TestAlphabet } { Test 255 }
+\exp_args:Nc \AssertIntEqual { sym Test 255 }
+  { \c_two_hundred_fifty_five }
+\ExplSyntaxOff
+\makeatother
+\begin{document}
+\[
+\TestAlphabet{
+  abc
+  \AssertIntEqual{\fam}{255}
+  \AssertIntEqual{\mathgroup}{255}
+}
+\]
+\end{document}
+%</test-kernel-alloc>
+%    \end{macrocode}
+%
+%
+% \subsection{\Hologo{LaTeX2e} kernel, \cs{mathstyle} primitive}
 %
 % Here we only check whether different fractions and other style-changing
 % commands result in the correct mathematical style.
 %    \begin{macrocode}
-%<*test-kernel>
+%<*test-kernel-style>
 \usepackage{lualatex-math}
 \begin{document}
 \begin{displaymath}
@@ -1169,7 +1288,7 @@ end
   \frac{\AssertMathStyle{7}}{\AssertMathStyle{7}}
 \end{math}
 \end{document}
-%</test-kernel>
+%</test-kernel-style>
 %    \end{macrocode}
 %
 %
