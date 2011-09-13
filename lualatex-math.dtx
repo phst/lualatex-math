@@ -51,6 +51,7 @@
 %
 %
 % \changes{v0.1}{2011/04/22}{Initial version}
+% \changes{v0.3a}{2011/09/13}{Updated for changes in \pkg{l3kernel}}
 %
 % \GetFileInfo{lualatex-math.sty}
 %
@@ -136,8 +137,8 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
-\RequirePackage{expl3}[2011/02/17]
-\ProvidesExplPackage{lualatex-math}{2011/08/07}{0.3}%
+\RequirePackage{expl3}[2011/09/05]
+\ProvidesExplPackage{lualatex-math}{2011/09/13}{0.3a}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -163,7 +164,7 @@
 \exp_args:Nx \AtEndOfPackage {
   \lltxmath_restore_catcode:N \$
 }
-\char_make_math_shift:N \$
+\char_set_catcode_math_toggle:N \$
 %    \end{macrocode}
 %
 %
@@ -249,7 +250,7 @@
 % \begin{macro}{\lltxmath_temp:w}
 %   A scratch macro.
 %    \begin{macrocode}
-\chk_if_free_cs:N \lltxmath_temp:w
+\cs_new:Npn \lltxmath_temp:w { }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -759,7 +760,7 @@
 %   \cmd{\@begindocumenthook}.
 %    \begin{macrocode}
 \AtEndOfPackageFile * { icomma } {
-  \tl_replace_in:Nnn \@begindocumenthook {
+  \tl_replace_once:Nnn \@begindocumenthook {
     \mathchardef \mathcomma \mathcode `\,
   } {
     \lltxmath_set_mathchar:NN \mathcomma \,
