@@ -42,8 +42,8 @@ dest_sty := $(name).sty
 dest_lua := $(name).lua
 destination := $(dest_sty) $(dest_lua)
 tests := test-kernel-alloc test-kernel-style test-amsmath test-unicode test-icomma test-icomma-unicode
-tests_src := $(addsuffix .tex, $(tests))
-tests_dest := $(addsuffix .pdf, $(tests))
+tests_src := $(addsuffix .tex,$(tests))
+tests_dest := $(addsuffix .pdf,$(tests))
 class := $(shell kpsewhich phst-doc.cls)
 manual := $(name).pdf
 auctex_style := $(name).el
@@ -55,15 +55,16 @@ changes_src := $(name).glo
 changes_dest := $(name).gls
 changes_log := $(name).glg
 changes_sty := gglo.ist
-tds_arch := $(name).tds.zip
 tds_root := texmf-dist
-tds_destdir := $(tds_root)/tex/$(branch)
-tds_docdir := $(tds_root)/doc/$(branch)
-tds_srcdir := $(tds_root)/source/$(branch)
-tds_dest := $(addprefix $(tds_destdir)/, $(destination))
-tds_doc := $(addprefix $(tds_docdir)/, $(manual))
-tds_source := $(addprefix $(tds_srcdir)/, $(source) $(driver))
-tds_files := $(tds_dest) $(tds_doc) $(tds_source)
+tds_arch := $(tds_root)/$(name).tds.zip
+tds_destdir := tex/$(branch)
+tds_docdir := doc/$(branch)
+tds_srcdir := source/$(branch)
+tds_dest := $(addprefix $(tds_destdir)/,$(destination))
+tds_doc := $(addprefix $(tds_docdir)/,$(manual))
+tds_source := $(addprefix $(tds_srcdir)/,$(source) $(driver))
+export tds_child_files := $(tds_dest) $(tds_doc) $(tds_source)
+tds_files := $(addprefix $(tds_root)/,$(tds_child_files))
 ctan_arch := $(name).zip
 ctan_files := $(tds_arch) README MANIFEST Makefile $(source) $(driver) $(destination) $(test_src) $(class) $(manual) $(auctex_style)
 
@@ -105,12 +106,12 @@ $(manual): $(source) $(destination)
 	$(LATEX) $(LATEXFLAGS_DRAFT) $<
 	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
-$(tds_destdir)/% $(tds_docdir)/% $(tds_srcdir)/%: %
+$(tds_root)/$(tds_destdir)/% $(tds_root)/$(tds_docdir)/% $(tds_root)/$(tds_srcdir)/%: %
 	$(INSTALL) -d $(dir $@)
 	$(INSTALL_DATA) $< $(dir $@)
 
 $(tds_arch): $(tds_files)
-	$(ZIP) -p $@ $^
+	$(MAKE) -C $(tds_root)
 
 $(ctan_arch): $(ctan_files)
 	$(ZIP) -j $@ $^
