@@ -138,7 +138,7 @@
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2011/09/05]
-\ProvidesExplPackage{lualatex-math}{2011/09/13}{0.3a}%
+\ProvidesExplPackage{lualatex-math}{2011/09/18}{0.3b}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -533,13 +533,14 @@
 %    \end{macrocode}
 % All of the following fixes work even if \pkg{amsmath} is already loaded.
 % \begin{macro}{\@begindocumenthook}
+%   \changes{v0.3b}{2011/09/18}{Another update for a change in \pkg{l3kernel}}
 %   \pkg{amsmath} repeats the definiton of \cmd{\std@minus} and
 %   \cmd{\std@equal} at the beginning of the document, so we also have to patch
 %   the internal kernel macro \cmd{\@begindocumenthook} which contains the hook
 %   code.
 %    \begin{macrocode}
 \AtEndOfPackageFile * { amsmath } {
-  \tl_replace_in:Nnn \@begindocumenthook {
+  \tl_replace_once:Nnn \@begindocumenthook {
     \mathchardef \std@minus \mathcode `\- \relax
     \mathchardef \std@equal \mathcode `\= \relax
   } {
