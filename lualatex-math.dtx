@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright 2011 by Philipp Stephani
+% Copyright 2011, 2012 by Philipp Stephani
 %
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{886}
+% \CheckSum{887}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -56,7 +56,7 @@
 % \GetFileInfo{lualatex-math.sty}
 %
 % \title{The \thispackage package\thanks{This document corresponds to \thispackage{}~\fileversion, dated~\filedate.}}
-% \author{Philipp Stephani \\ \texttt{st\_philipp@yahoo.de}}
+% \author{Philipp Stephani \\ \texttt{p.stephani2@gmail.com}}
 % \date{\filedate}
 %
 %
@@ -137,8 +137,8 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
-\RequirePackage{expl3}[2011/09/05]
-\ProvidesExplPackage{lualatex-math}{2011/09/18}{0.3b}%
+\RequirePackage{expl3}[2012/08/14]
+\ProvidesExplPackage{lualatex-math}{2012/08/23}{0.3c}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -331,6 +331,7 @@
 %   mathematical code of the character \texttt{\textasciigrave}\meta{token}.
 %   Since there is no \cmd{\Umathcharnumdef} primitive, we have to extract the
 %   class, family, and slot numbers separately.
+%   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \lltxmath_set_mathchar:NN #1 #2 {
   \luatexUmathchardef #1
@@ -479,6 +480,7 @@
 %   specified by \meta{primitive}, which must be one of \cmd{\fontcharwd},
 %   \cmd{\fontcharht} or \cmd{\fontchardp}, in the currently selected text
 %   style font.
+%   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \cs_new_nopar:Npn \lltxmath_char_dim:NN #1 #2 {
   #1 \textfont
@@ -1122,6 +1124,7 @@ end
 % \begin{macro}{\AssertNoSpace}
 %   The command \cmd{\AssertNoSpace}\marg{text} asserts that the node list that
 %   is the result of typesetting \meta{text} contains no glue or kern nodes.
+%   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \NewDocumentCommand \AssertNoSpace { m } {
   \hbox_set:Nn \l_test_tmpa_box { #1 }
@@ -1153,6 +1156,7 @@ end
 %   The command \cmd{\AssertMuSpace}\marg{text}\marg{muskip} asserts that the
 %   node list that is the result of typesetting \meta{text} contains at least
 %   one glue or kern node of with \meta{muskip}.
+%   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \makeatletter
 \NewDocumentCommand \AssertMuSpace { m m } {
@@ -1445,12 +1449,17 @@ end
 % package contains fixes that somewhat overlap with ours.  We have to take care
 % in all packages that no attempt is made to patch a single macro twice.
 % Therefore we treat warnings (that occur when trying to patch a macro with an
-% unknown meaning) as errors here.
+% unknown meaning) as errors here.  However, the auxiliary package
+% \pkg{fontspec-patches} uses \cmd{\RenewDocumentCommand} from the \pkg{xparse}
+% package, which generates a warning that we don't want to turn into an error.
+% Therefore we treat the offending message \msg{redefine-command} specially.
+% \changes{v0.3c}{2012/08/23}{Added special treatment for \msg{redefine-command} warning}
 %
 %    \begin{macrocode}
 %<*test-unicode>
 \ExplSyntaxOn
 \msg_redirect_class:nn { warning } { error }
+\msg_redirect_name:nnn { LaTeX } { xparse / redefine-command } { info }
 \ExplSyntaxOff
 \usepackage{amsmath}
 \usepackage{unicode-math}[2011/05/05]
