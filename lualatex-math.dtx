@@ -334,7 +334,7 @@
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \lltxmath_set_mathchar:NN #1 #2 {
   \luatexUmathchardef #1
-  \lua_now:x {
+  \lua_now_x:n {
     lualatex.math.print_class_fam_slot( \int_eval:n { `#2 } )
   }
   \scan_stop:
@@ -482,7 +482,7 @@
 %    \begin{macrocode}
 \cs_new_nopar:Npn \lltxmath_char_dim:NN #1 #2 {
   #1 \textfont
-  \lua_now:x {
+  \lua_now_x:n {
     lualatex.math.print_fam_slot( \int_eval:n { `#2 } )
   }
 }
@@ -1126,7 +1126,7 @@ end
 \NewDocumentCommand \AssertNoSpace { m } {
   \hbox_set:Nn \l_test_tmpa_box { #1 }
   \int_if_odd:nTF {
-    \lua_now:x {
+    \lua_now_x:n {
       local~ b = tex.getbox(\int_use:N \l_test_tmpa_box)
       if~ contains_space(b.head) then~
         tex.sprint("0")
@@ -1159,7 +1159,7 @@ end
   \hbox_set:Nn \l_test_tmpa_box { #1 }
   \hbox_set:Nn \l_test_tmpb_box { $ \mskip #2 \m@th $ }
   \int_if_odd:nTF {
-    \lua_now:x {
+    \lua_now_x:n {
       local~ b = tex.getbox(\int_use:N \l_test_tmpa_box)
       local~ s = tex.getbox(\int_use:N \l_test_tmpb_box)
       if~ contains_space(b.head, s.width) then~
