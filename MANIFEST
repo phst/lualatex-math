@@ -12,7 +12,10 @@ and the derived files
 
 lualatex-math.sty
 lualatex-math.lua
-test-kernel.tex
+test-kernel-alloc.tex
+test-kernel-style.tex
 test-amsmath.tex
 test-unicode.tex
+test-icomma.tex
+test-icomma-unicode.tex
 lualatex-math.pdf
