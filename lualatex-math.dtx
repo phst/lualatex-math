@@ -141,7 +141,7 @@
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2012/08/14]
-\ProvidesExplPackage{lualatex-math}{2012/08/27}{1.0}%
+\ProvidesExplPackage{lualatex-math}{2012/10/13}{1.1}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -330,11 +330,14 @@
 %   The macro \cmd{\@@_set_mathchar:NN}\meta{control sequence}\meta{token}
 %   defines the \meta{control sequence} as an extended mathematical character
 %   shorthand whose mathematical code is given by the mathematical code of the
-%   character \texttt{\textasciigrave}\meta{token}.  Since there is no
-%   \cmd{\Umathcharnumdef} primitive, we have to extract the class, family, and
-%   slot numbers separately.
+%   character \texttt{\textasciigrave}\meta{token}.  We cannot use the
+%   |\Umathcharnumdef| primitive here since we would then rely on the
+%   |\Umathcodenum| primitive which is currently
+%   broken.\footnote{\url{http://tug.org/pipermail/luatex/2012-October/003794.html}}
 %   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to
 %   \cs{lua_now_x:n}}
+%   \changes{v1.1}{2012/10/13}{Update reasoning why \cs{Umathcharnumdef} is not
+%   used here}
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_set_mathchar:NN #1 #2 {
   \luatexUmathchardef #1
