@@ -2,8 +2,9 @@ The ``lualatex-math`` package
 =============================
 
 This package patches a few commands of the LaTeX 2ε kernel and the ``amsmath``,
-``mathtools`` and ``icomma`` packages to be more compatible with the LuaTeX
-engine.  It is only meaningful if you compile your documents with LuaLaTeX.
+``amsopn``, ``mathtools`` and ``icomma`` packages to be more compatible with
+the LuaTeX engine.  It is only meaningful if you compile your documents with
+LuaLaTeX.
 
 
 License
