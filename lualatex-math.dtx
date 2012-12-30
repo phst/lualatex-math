@@ -16,12 +16,18 @@
 %
 % \iffalse
 %<*driver>
-\documentclass[a4paper, 10pt]{phst-doc}
+\documentclass[a4paper, 10pt, ngerman, american]{phst-doc}
 
 \usepackage{lualatex-math}
 \newcommand*{\thispackage}{\textsf{lualatex-math}\xspace}
 
+%<!english>\excludecomment{english}
+%<!german>\excludecomment{german}
+%<!english>\OnlyDescription
+
 \begin{document}
+
+%<german>\selectlanguage{ngerman}
 
 \DocInput{lualatex-math.dtx}
 \PrintChanges
@@ -50,14 +56,22 @@
 %   Right brace   \}     Tilde         \~}
 %
 %
+% \begin{english}
 % \changes{v0.1}{2011/04/22}{Initial version}
 % \changes{v0.3a}{2011/09/13}{Updated for changes in \pkg{l3kernel}}
 % \changes{v1.0}{2012/08/27}{Switched to \pkg{l3docstrip}}
+% \end{english}
 %
 % \GetFileInfo{lualatex-math.sty}
 %
+% \begin{english}
 % \title{The \thispackage package\thanks{This document corresponds to
 % \thispackage{}~\fileversion, dated~\filedate.}}
+% \end{english}
+% \begin{german}
+% \title{}
+% \end{german}
+%
 % \author{Philipp Stephani \\ \texttt{p.stephani2@gmail.com}}
 % \date{\filedate}
 %
@@ -66,6 +80,7 @@
 % \tableofcontents
 %
 %
+% \begin{english}
 % \section{Introduction}
 %
 % \Hologo{LuaTeX} brings major improvements to all areas of \hologo{TeX}
@@ -97,8 +112,10 @@
 % packages are updated to be usable with \hologo{LuaTeX}.  By its very nature,
 % the package is likely to cause problems; in such cases, please refer to the
 % issue tracker\footnote{\url{https://github.com/phst/lualatex-math/issues}}.
+% \end{english}
 %
 %
+% \begin{english}
 % \section{Interface}
 %
 % The \thispackage package can be loaded with \cmd{\usepackage} or
@@ -128,6 +145,7 @@
 % like \cmd{\over} or \cmd{\atopwithdelims} and the \hologo{plainTeX} leftovers
 % like \cmd{\brack} or \cmd{\choose} cannot be patched, and you shouldn’t use
 % them.
+% \end{english}
 %
 % \StopEventually{}
 %

@@ -1,5 +1,5 @@
 # Makefile
-# Copyright 2011 Philipp Stephani
+# Copyright 2011, 2012 Philipp Stephani
 #
 # This work may be distributed and/or modified under the
 # conditions of the LaTeX Project Public License, either version 1.3c
@@ -45,16 +45,10 @@ tests := test-kernel-alloc test-kernel-style test-amsmath test-unicode test-icom
 tests_src := $(addsuffix .tex,$(tests))
 tests_dest := $(addsuffix .pdf,$(tests))
 class := $(shell kpsewhich phst-doc.cls)
-manual := $(name).pdf
+manuals := $(name) $(name)-de
+manuals_src := $(addsuffix .drv,$(manuals))
+manuals_dest := $(addsuffix .pdf,$(manuals))
 auctex_style := $(name).el
-index_src := $(name).idx
-index_dest := $(name).ind
-index_log := $(name).ilg
-index_sty := gind.ist
-changes_src := $(name).glo
-changes_dest := $(name).gls
-changes_log := $(name).glg
-changes_sty := gglo.ist
 tds_root := texmf-dist
 tds_arch := $(tds_root)/$(name).tds.zip
 tds_destdir := tex/$(branch)
@@ -66,14 +60,14 @@ tds_source := $(addprefix $(tds_srcdir)/,$(source) $(driver))
 export tds_child_files := $(tds_dest) $(tds_doc) $(tds_source)
 tds_files := $(addprefix $(tds_root)/,$(tds_child_files))
 ctan_arch := $(name).zip
-ctan_files := $(tds_arch) README MANIFEST Makefile $(source) $(driver) $(destination) $(test_src) $(class) $(manual) $(auctex_style)
+ctan_files := $(tds_arch) README MANIFEST Makefile $(source) $(driver) $(destination) $(tests_src) $(manuals_src) $(class) $(manuals_dest) $(auctex_style)
 
 
 all: $(destination) $(auctex_style)
 
 check: $(tests_dest)
 
-pdf: $(manual)
+pdf: $(manuals_dest)
 
 complete: all check pdf
 
@@ -93,16 +87,16 @@ install-pdf: pdf
 
 install-complete: install install-pdf
 
-$(destination) $(tests_src): $(driver) $(source)
+$(destination) $(tests_src) $(manuals_src): $(driver) $(source)
 	$(TEX) $<
 
 $(tests_dest): %.pdf: %.tex $(destination)
 	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
-$(manual): $(source) $(destination)
+$(manuals_dest): %.pdf: %.drv $(destination)
 	$(LATEX) $(LATEXFLAGS_DRAFT) $<
-	$(MAKEINDEX) -s $(index_sty) -o $(index_dest) -t $(index_log) $(index_src)
-	$(MAKEINDEX) -s $(changes_sty) -o $(changes_dest) -t $(changes_log) $(changes_src)
+	$(MAKEINDEX) -s gind.ist -o $(basename $@).ind -t $(basename $@).ilg $(basename $@).idx
+	$(MAKEINDEX) -s gglo.ist -o $(basename $@).gls -t $(basename $@).glg $(basename $@).glo
 	$(LATEX) $(LATEXFLAGS_DRAFT) $<
 	$(LATEX) $(LATEXFLAGS_FINAL) $<
 
