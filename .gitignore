@@ -8,7 +8,9 @@ auto/
 *.sty
 *.lua
 test-*.tex
+*.drv
 *.log
+*.cut
 *.aux
 *.toc
 *.lof
