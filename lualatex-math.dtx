@@ -62,6 +62,12 @@
 % \changes{v1.0}{2012/08/27}{Switched to \pkg{l3docstrip}}
 % \end{english}
 %
+% \begin{german}
+%   \changes{v0.1}{2011/04/22}{Erste Version}
+%   \changes{v0.3a}{2011/09/13}{Aktualisierung nach inkompatiblen Änderungen in \pkg{l3kernel}}
+%   \changes{v1.0}{2012/08/27}{Umstellung auf \pkg{l3docstrip}}
+% \end{german}
+%
 % \GetFileInfo{lualatex-math.sty}
 %
 % \begin{english}
@@ -69,7 +75,8 @@
 % \thispackage{}~\fileversion, dated~\filedate.}}
 % \end{english}
 % \begin{german}
-% \title{}
+%   \title{Das Paket \thispackage\thanks{Dieses Dokument beschreibt
+%       \thispackage{}~\fileversion vom~\filedate.}}
 % \end{german}
 %
 % \author{Philipp Stephani \\ \texttt{p.stephani2@gmail.com}}
@@ -114,6 +121,47 @@
 % issue tracker\footnote{\url{https://github.com/phst/lualatex-math/issues}}.
 % \end{english}
 %
+% \begin{german}
+%   \section{Einführung}
+%
+%   \Hologo{LuaTeX} bringt zahlreiche Verbesserungen für alle Gebiete des
+%   Satzes und der Programmierung mit \hologo{TeX} mit sich.  Diese
+%   Verbesserungen werden in Form von neuen primitiven Befehlen oder durch den
+%   eingebetteten Lua-Interpreter zur Verfügung gestellt, und normale
+%   \hologo{LaTeX}-Benutzer sollten sich nicht damit beschäftigen müssen, sie
+%   in \hologo{LaTeX2e} zu integrieren.  Aus diesem Grund ist eine Vielzahl von
+%   \hologo{LaTeX2e}-Paketen entstanden, um die Lücke zwischen existierenden
+%   Dokumenten und den neuen Möglichkeiten zu schließen.  Das Paket
+%   \thispackage beschäftigt sich mit den zusätzlichen Möglichkeiten für den
+%   Mathematiksatz.  Die wichtigste davon ist die Möglichkeit, Unicode und
+%   OpenType-Schriften zu benutzen, was durch \Robertson{}s
+%   \pkg{unicode-math}-Paket ermöglicht wird.  Allerdings gibt es ein paar
+%   Änderungen, die nicht in Bezug zu Unicode stehen: um diese kümmert sich das
+%   vorliegende Paket.  Während prinzipiell die meisten \hologo{TeX}-Dokumente,
+%   die zur Verwendung mit den althergebrachten Engines verfasst wurden, ohne
+%   Probleme auch mit \hologo{LuaTeX} funktionieren sollten, gibt es ein paar
+%   wenige inkompatible Änderungen, die die Aufmerksamkeit von Paketautoren
+%   einfordern.  Das \thispackage-Paket versucht, einige der Probleme zu lösen,
+%   die bei der Übertragung einiger vorhandener Makropakete nach
+%   \hologo{LuaLaTeX} festgestellt wurden.
+%
+%   Im Allgemeinen sollte man nur nach sorgfältiger Abwägung Patches für
+%   vorhandene Makropakete verfassen: das Patchen von Code durch jemand anderen
+%   als den ursprünglichen Autor macht den neuen Code von der Implementation
+%   der gepatchten Funktionalität abhänging, was dem Kapselungsprinzip
+%   widerspricht.  Dennoch ist diese Art der Programmierung mangels
+%   Alternativen zu einer akzeptierten Herangehensweise beim Implementieren
+%   neuer Funktionalität für \hologo{LaTeX} geworden.  Um die negativen
+%   Auswirkungen so gering wie möglich zu halten, verändert das
+%   \thispackage-Paket nur den \hologo{LaTeX2e}-Kern und einige wenige bekannte
+%   Pakete.  Generell sollte das vorliegende Paket als eine Zwischenlösung
+%   angesehen werden, die zu entfernen ist, sobald die mathematiksatzbezogenen
+%   Pakete aktualisiert wurden und korrekt unter \hologo{LuaTeX} funktionieren.
+%   Aufgrund seiner Natur ist es wahrscheinlich, dass dieses Paket Probleme
+%   verursacht; in diesen Fall benutze bitte den
+%   Bugtracker\footnote{\url{https://github.com/phst/lualatex-math/issues}}.
+% \end{german}
+%
 %
 % \begin{english}
 % \section{Interface}
@@ -146,6 +194,41 @@
 % like \cmd{\brack} or \cmd{\choose} cannot be patched, and you shouldn’t use
 % them.
 % \end{english}
+%
+% \begin{german}
+%   \section{Schnittstelle}
+%
+%   Das \thispackage-Paket kann wie üblich mit Hilfe von |\usepackage| oder
+%   |\RequirePackage| geladen werden.  Es besitzt weder Optionen noch eine
+%   öffentliche Schnittstelle; der Patchprozess wird automatisch durchgeführt,
+%   sobald das Paket geladen wird.  Selbstverständlich funktioniert das
+%   \thispackage-Paket nur unter \hologo{LuaLaTeX}; für andere Engines oder
+%   Formate bricht das Laden mit einer Fehlermeldung ab.  Das Paket hängt von
+%   der \pkg{expl3}-Sammlung, dem \pkg{etoolbox}-Paket, der
+%   \pkg{luatexbase}-Sammlung und dem \pkg{filehook}-Paket ab.  Das
+%   \thispackage-Paket ist unabhängig vom \pkg{unicode-math}-Paket; die hier
+%   zur Verfügung gestellten Korrekturen sind sowohl für Unicode"~ als auch für
+%   herkömmlichen Mathematiksatz gültig.
+%
+%   Aktuell werden Patches für den \hologo{LaTeX2e}-Kern sowie für die Pakete
+%   \pkg{amsmath}, \pkg{amsopn}, \pkg{mathtools} und \pkg{icomma} angeboten.
+%   Es spielt keine Rolle, ob du diese Pakete vor oder nach \thispackage lädst.
+%   Sie sollten funktionieren wie erwartet (und idealerweise solltest du
+%   überhaupt keine Änderung bemerken), aber falls du andere Pakete, die selbst
+%   Befehle überschreiben, die von dem vorliegenden Paket gepatcht werden,
+%   lädst, können Probleme auftreten, wie bei \hologo{LaTeX} üblich.
+%
+%   Eine für den Benutzer sichtbare Änderung besteht darin, dass der neue
+%   primitive Befehl \DescribeMacros{\mathstyle\luatexmathstyle}|\mathstyle|
+%   (in \hologo{LuaLaTeX} allgemein als |\luatexmathstyle| bekannt) in allen
+%   Fällen funktionieren sollte, nachdem \thispackage geladen wurde, unter der
+%   Bedingung, dass du die High-Level-Makros
+%   \DescribeMacros{\frac\binom\genfrac}|\frac|, |\binom| und |\genfrac|
+%   benutzt.  Die bruchartigen primitiven \hologo{TeX}-Befehle wie |\over| oder
+%   |\atopwithdelims| und die Makros aus dem \hologo{plainTeX}-Format wie
+%   |\brack| oder |\choose| können nicht gepatcht werden, und du solltest sie
+%   meiden.
+% \end{german}
 %
 % \StopEventually{}
 %
