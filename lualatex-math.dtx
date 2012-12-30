@@ -57,9 +57,9 @@
 %
 %
 % \begin{english}
-% \changes{v0.1}{2011/04/22}{Initial version}
-% \changes{v0.3a}{2011/09/13}{Updated for changes in \pkg{l3kernel}}
-% \changes{v1.0}{2012/08/27}{Switched to \pkg{l3docstrip}}
+%   \changes{v0.1}{2011/04/22}{Initial version}
+%   \changes{v0.3a}{2011/09/13}{Updated for changes in \pkg{l3kernel}}
+%   \changes{v1.0}{2012/08/27}{Switched to \pkg{l3docstrip}}
 % \end{english}
 %
 % \begin{german}
@@ -71,8 +71,8 @@
 % \GetFileInfo{lualatex-math.sty}
 %
 % \begin{english}
-% \title{The \thispackage package\thanks{This document corresponds to
-% \thispackage{}~\fileversion, dated~\filedate.}}
+%   \title{The \thispackage package\thanks{This document corresponds to
+%       \thispackage{}~\fileversion, dated~\filedate.}}
 % \end{english}
 % \begin{german}
 %   \title{Das Paket \thispackage\thanks{Dieses Dokument beschreibt
@@ -88,37 +88,38 @@
 %
 %
 % \begin{english}
-% \section{Introduction}
+%   \section{Introduction}
 %
-% \Hologo{LuaTeX} brings major improvements to all areas of \hologo{TeX}
-% typesetting and programming.  They are made available through new primitives
-% or the embedded Lua interpreter, and combining them with existing
-% \hologo{LaTeX2e} packages is not a task the average \hologo{LaTeX} user
-% should have to care about.  Therefore a multitude of \hologo{LaTeX2e}
-% packages have been written to bridge the gap between documents and the new
-% features.  The \thispackage package focuses on the additional possibilities
-% for mathematical typesetting.  The most eminent of the new features is the
-% ability to use Unicode and OpenType fonts, as provided by \Robertson’s
-% \pkg{unicode-math} package.  However, there is a smaller group of changes
-% unrelated to Unicode: these are to be dealt with in this package.  While in
-% principle most \hologo{TeX} documents written for traditional engines should
-% work just fine with \hologo{LuaTeX}, there is a small number of breaking
-% changes that require the attention of package authors.  The \thispackage
-% package tries to fix some of the issues encountered while porting traditional
-% macro packages to \hologo{LuaLaTeX}.
+%   \Hologo{LuaTeX} brings major improvements to all areas of \hologo{TeX}
+%   typesetting and programming.  They are made available through new primitives
+%   or the embedded Lua interpreter, and combining them with existing
+%   \hologo{LaTeX2e} packages is not a task the average \hologo{LaTeX} user
+%   should have to care about.  Therefore a multitude of \hologo{LaTeX2e}
+%   packages have been written to bridge the gap between documents and the new
+%   features.  The \thispackage package focuses on the additional possibilities
+%   for mathematical typesetting.  The most eminent of the new features is the
+%   ability to use Unicode and OpenType fonts, as provided by \Robertson’s
+%   \pkg{unicode-math} package.  However, there is a smaller group of changes
+%   unrelated to Unicode: these are to be dealt with in this package.  While in
+%   principle most \hologo{TeX} documents written for traditional engines should
+%   work just fine with \hologo{LuaTeX}, there is a small number of breaking
+%   changes that require the attention of package authors.  The \thispackage
+%   package tries to fix some of the issues encountered while porting traditional
+%   macro packages to \hologo{LuaLaTeX}.
 %
-% The decision to write patches for existing macro packages should not be made
-% lightly: monkey patching done by somebody different from the original package
-% author ties the patching package to the implementation details of the patched
-% functionality and breaks all rules of encapsulation.  However, due to the
-% lack of alternatives, it has become an accepted way of providing new
-% functionality in \hologo{LaTeX}.  To keep the negative impact as small as
-% possible, the \thispackage package patches only the \hologo{LaTeX2e} kernel
-% and a small number of popular packages.  In general, this package should be
-% regarded as a temporary kludge that should be removed once the math-related
-% packages are updated to be usable with \hologo{LuaTeX}.  By its very nature,
-% the package is likely to cause problems; in such cases, please refer to the
-% issue tracker\footnote{\url{https://github.com/phst/lualatex-math/issues}}.
+%   The decision to write patches for existing macro packages should not be
+%   made lightly: monkey patching done by somebody different from the original
+%   package author ties the patching package to the implementation details of
+%   the patched functionality and breaks all rules of encapsulation.  However,
+%   due to the lack of alternatives, it has become an accepted way of providing
+%   new functionality in \hologo{LaTeX}.  To keep the negative impact as small
+%   as possible, the \thispackage package patches only the \hologo{LaTeX2e}
+%   kernel and a small number of popular packages.  In general, this package
+%   should be regarded as a temporary kludge that should be removed once the
+%   math-related packages are updated to be usable with \hologo{LuaTeX}.  By
+%   its very nature, the package is likely to cause problems; in such cases,
+%   please refer to the issue
+%   tracker\footnote{\url{https://github.com/phst/lualatex-math/issues}}.
 % \end{english}
 %
 % \begin{german}
@@ -164,35 +165,36 @@
 %
 %
 % \begin{english}
-% \section{Interface}
+%   \section{Interface}
 %
-% The \thispackage package can be loaded with \cmd{\usepackage} or
-% \cmd{\RequirePackage}, as usual.  It has no options and no public interface;
-% the patching is always done when the package is loaded and cannot be
-% controlled.  As a matter of course, the \thispackage package needs
-% \hologo{LuaLaTeX} to function; it will produce error messages and refuse to
-% load under other engines and formats.  The package depends on the \pkg{expl3}
-% bundle, the \pkg{etoolbox} package, the \pkg{luatexbase} bundle and the
-% \pkg{filehook} package.  The \thispackage package is independent of the
-% \pkg{unicode-math} package; the fixes provided here are valid for both
-% Unicode and legacy math typesetting.
+%   The \thispackage package can be loaded with \cmd{\usepackage} or
+%   \cmd{\RequirePackage}, as usual.  It has no options and no public
+%   interface; the patching is always done when the package is loaded and
+%   cannot be controlled.  As a matter of course, the \thispackage package
+%   needs \hologo{LuaLaTeX} to function; it will produce error messages and
+%   refuse to load under other engines and formats.  The package depends on the
+%   \pkg{expl3} bundle, the \pkg{etoolbox} package, the \pkg{luatexbase} bundle
+%   and the \pkg{filehook} package.  The \thispackage package is independent of
+%   the \pkg{unicode-math} package; the fixes provided here are valid for both
+%   Unicode and legacy math typesetting.
 %
-% Currently patches for the \hologo{LaTeX2e} kernel and the \pkg{amsmath},
-% \pkg{amsopn}, \pkg{mathtools} and \pkg{icomma} packages are provided.  It is
-% not relevant whether you load these packages before or after \thispackage.
-% They should work as expected (and ideally you shouldn’t notice anything), but
-% if you load other packages that by themselves overwrite commands patched by
-% this package, bad things may happen, as it is usual with \hologo{LaTeX}.
+%   Currently patches for the \hologo{LaTeX2e} kernel and the \pkg{amsmath},
+%   \pkg{amsopn}, \pkg{mathtools} and \pkg{icomma} packages are provided.  It
+%   is not relevant whether you load these packages before or after
+%   \thispackage.  They should work as expected (and ideally you shouldn’t
+%   notice anything), but if you load other packages that by themselves
+%   overwrite commands patched by this package, bad things may happen, as it is
+%   usual with \hologo{LaTeX}.
 %
-% One user-visible change is that the new
-% \DescribeMacros{\mathstyle\luatexmathstyle}\cmd{\mathstyle} primitive
-% (usually called \cmd{\luatexmathstyle} in \hologo{LuaLaTeX}) should work in
-% all cases after the \thispackage package has been loaded, provided you use
-% the high-level macros \DescribeMacros{\frac\binom\genfrac}\cmd{\frac},
-% \cmd{\binom}, and \cmd{\genfrac}.  The fraction-like \hologo{TeX} primitives
-% like \cmd{\over} or \cmd{\atopwithdelims} and the \hologo{plainTeX} leftovers
-% like \cmd{\brack} or \cmd{\choose} cannot be patched, and you shouldn’t use
-% them.
+%   One user-visible change is that the new
+%   \DescribeMacros{\mathstyle\luatexmathstyle}\cmd{\mathstyle} primitive
+%   (usually called \cmd{\luatexmathstyle} in \hologo{LuaLaTeX}) should work in
+%   all cases after the \thispackage package has been loaded, provided you use
+%   the high-level macros \DescribeMacros{\frac\binom\genfrac}\cmd{\frac},
+%   \cmd{\binom}, and \cmd{\genfrac}.  The fraction-like \hologo{TeX}
+%   primitives like \cmd{\over} or \cmd{\atopwithdelims} and the
+%   \hologo{plainTeX} leftovers like \cmd{\brack} or \cmd{\choose} cannot be
+%   patched, and you shouldn’t use them.
 % \end{english}
 %
 % \begin{german}
