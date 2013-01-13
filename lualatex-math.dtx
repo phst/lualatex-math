@@ -613,8 +613,8 @@
 %   can do, therefore we use the non-starred version of
 %   \cmd{\AtBeginOfPackageFile}.
 %    \begin{macrocode}
-\chk_if_free_cs:N \l_@@_minus_mathchar
-\chk_if_free_cs:N \l_@@_equal_mathchar
+\__chk_if_free_cs:N \l_@@_minus_mathchar
+\__chk_if_free_cs:N \l_@@_equal_mathchar
 \AtBeginOfPackageFile { amsmath } {
   \@@_set_mathchar:NN \l_@@_minus_mathchar \-
   \@@_set_mathchar:NN \l_@@_equal_mathchar \=
@@ -1380,18 +1380,18 @@ end
 \usepackage{lualatex-math}
 \makeatletter
 \ExplSyntaxOn
-\prg_stepwise_inline:nnnn { \c_four } { \c_one } {
+\int_step_inline:nnnn { \c_four } { \c_one } {
   \c_two_hundred_fifty_five - \c_one
 } {
-  \prg_case_int:nnn { \int_mod:nn { #1 } { \c_three } } {
+  \int_case:nnn { \int_mod:nn { #1 } { \c_three } } {
     { \c_zero } {
-      \chk_if_free_cs:N \g_@@_family_int
+      \__chk_if_free_cs:N \g_@@_family_int
       \newfam \g_@@_family_int
       \AssertIntEqual { \g_@@_family_int } { #1 }
       \cs_undefine:N \g_@@_family_int
     }
     { \c_one } {
-      \chk_if_free_cs:N \g_@@_mathgroup_int
+      \__chk_if_free_cs:N \g_@@_mathgroup_int
       \new@mathgroup \g_@@_mathgroup_int
       \AssertIntEqual { \g_@@_mathgroup_int } { #1 }
       \cs_undefine:N \g_@@_mathgroup_int
