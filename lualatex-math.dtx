@@ -214,22 +214,22 @@
 %
 %   Aktuell werden Patches für den \hologo{LaTeX2e}-Kern sowie für die Pakete
 %   \pkg{amsmath}, \pkg{amsopn}, \pkg{mathtools} und \pkg{icomma} angeboten.
-%   Es spielt keine Rolle, ob du diese Pakete vor oder nach \thispackage lädst.
-%   Sie sollten funktionieren wie erwartet (und idealerweise solltest du
-%   überhaupt keine Änderung bemerken), aber falls du andere Pakete, die selbst
-%   Befehle überschreiben, die von dem vorliegenden Paket gepatcht werden,
-%   lädst, können Probleme auftreten, wie bei \hologo{LaTeX} üblich.
+%   Es spielt keine Rolle, ob diese Pakete vor oder nach \thispackage geladen
+%   werden.  Sie sollten funktionieren wie erwartet (und idealerweise sollte
+%   überhaupt keine Änderung bemerkbar sein), aber falls du andere Pakete, die
+%   selbst Befehle überschreiben, die von dem vorliegenden Paket gepatcht
+%   werden, lädst, können Probleme auftreten, wie bei \hologo{LaTeX} üblich.
 %
 %   Eine für den Benutzer sichtbare Änderung besteht darin, dass der neue
 %   primitive Befehl \DescribeMacros{\mathstyle\luatexmathstyle}|\mathstyle|
 %   (in \hologo{LuaLaTeX} allgemein als |\luatexmathstyle| bekannt) in allen
 %   Fällen funktionieren sollte, nachdem \thispackage geladen wurde, unter der
-%   Bedingung, dass du die High-Level-Makros
+%   Bedingung, dass die High-Level-Makros
 %   \DescribeMacros{\frac\binom\genfrac}|\frac|, |\binom| und |\genfrac|
-%   benutzt.  Die bruchartigen primitiven \hologo{TeX}-Befehle wie |\over| oder
-%   |\atopwithdelims| und die Makros aus dem \hologo{plainTeX}-Format wie
-%   |\brack| oder |\choose| können nicht gepatcht werden, und du solltest sie
-%   meiden.
+%   benutzt werden.  Die bruchartigen primitiven \hologo{TeX}-Befehle wie
+%   |\over| oder |\atopwithdelims| und die Makros aus dem
+%   \hologo{plainTeX}-Format wie |\brack| oder |\choose| können nicht gepatcht
+%   werden und sollten allgemein vermieden werden.
 % \end{german}
 %
 % \StopEventually{}
