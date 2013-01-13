@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright 2011, 2012 by Philipp Stephani
+% Copyright 2011–2013 by Philipp Stephani
 %
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -244,7 +244,7 @@
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2012/08/14]
-\ProvidesExplPackage{lualatex-math}{2012/10/13}{1.1}%
+\ProvidesExplPackage{lualatex-math}{2013/01/13}{1.2}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -612,9 +612,10 @@
 %   will fail.  If \pkg{amsmath} has already been loaded, there is nothing we
 %   can do, therefore we use the non-starred version of
 %   \cmd{\AtBeginOfPackageFile}.
+%   \changes{v1.2}{2013/01/13}{Replace removed macro \cs{chk_if_free_cs:N}}
 %    \begin{macrocode}
-\__chk_if_free_cs:N \l_@@_minus_mathchar
-\__chk_if_free_cs:N \l_@@_equal_mathchar
+\tl_new:N \l_@@_minus_mathchar
+\tl_new:N \l_@@_equal_mathchar
 \AtBeginOfPackageFile { amsmath } {
   \@@_set_mathchar:NN \l_@@_minus_mathchar \-
   \@@_set_mathchar:NN \l_@@_equal_mathchar \=
@@ -1375,6 +1376,8 @@ end
 % \enquote{math groups} in \hologo{LaTeX} parlance).  Therefore we should still
 % be able to allocate 252 families.  We do this alternately with \cmd{\newfam},
 % \cmd{\new@mathgroup} and \cmd{\DeclareSymbolFont}.
+% \changes{v1.2}{2013/01/13}{Replace removed macro \cs{chk_if_free_cs:N}}
+% \changes{v1.2}{2013/01/13}{Track renaming of \cs{int_step_inline:nnnn}}
 %    \begin{macrocode}
 %<*test-kernel-alloc>
 \usepackage{lualatex-math}
@@ -1385,13 +1388,13 @@ end
 } {
   \int_case:nnn { \int_mod:nn { #1 } { \c_three } } {
     { \c_zero } {
-      \__chk_if_free_cs:N \g_@@_family_int
+      \int_new:N \g_@@_family_int
       \newfam \g_@@_family_int
       \AssertIntEqual { \g_@@_family_int } { #1 }
       \cs_undefine:N \g_@@_family_int
     }
     { \c_one } {
-      \__chk_if_free_cs:N \g_@@_mathgroup_int
+      \int_new:N \g_@@_mathgroup_int
       \new@mathgroup \g_@@_mathgroup_int
       \AssertIntEqual { \g_@@_mathgroup_int } { #1 }
       \cs_undefine:N \g_@@_mathgroup_int
