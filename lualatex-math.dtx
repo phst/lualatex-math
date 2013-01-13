@@ -1380,10 +1380,10 @@ end
 \usepackage{lualatex-math}
 \makeatletter
 \ExplSyntaxOn
-\prg_stepwise_inline:nnnn { \c_four } { \c_one } {
+\int_step_inline:nnnn { \c_four } { \c_one } {
   \c_two_hundred_fifty_five - \c_one
 } {
-  \prg_case_int:nnn { \int_mod:nn { #1 } { \c_three } } {
+  \int_case:nnn { \int_mod:nn { #1 } { \c_three } } {
     { \c_zero } {
       \chk_if_free_cs:N \g_@@_family_int
       \newfam \g_@@_family_int
