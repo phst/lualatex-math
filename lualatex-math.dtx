@@ -935,12 +935,14 @@
 %
 % \section{Implementation of the \hologo{LuaLaTeX} module}
 %
-% For the Lua module, we use the standard \pkg{luatexbase-modutils} template
-% and the \func{module} function.
+% For the Lua module, we use the standard \pkg{luatexbase-modutils} template.
+% \changes{v1.3}{2013/08/03}{Stop using the deprecated \func{module} function}
 %    \begin{macrocode}
 %<*lua>
 require("luatexbase.modutils")
 require("luatexbase.cctb")
+lualatex = lualatex or {}
+lualatex.math = lualatex.math or {}
 local err, warn, info, log = luatexbase.provides_module({
   name = "lualatex-math",
   date = "2013/08/03",
@@ -960,10 +962,7 @@ local unpack = unpack or table.unpack
 %    \end{macrocode}
 % \end{function}
 %    \begin{macrocode}
-local string = string
-local tex = tex
 local cctb = luatexbase.catcodetables
-module("lualatex.math")
 %    \end{macrocode}
 %
 % \begin{function}{print_fam_slot}
@@ -973,7 +972,7 @@ module("lualatex.math")
 %   \meta{family}\texttt{\textvisiblespace}\meta{slot}, suitable for the
 %   right-hand side of \eg \verb|\fontcharht\textfont|.
 %    \begin{macrocode}
-function print_fam_slot(char)
+function lualatex.math.print_fam_slot(char)
   local code = tex.getmathcode(char)
   local class, family, slot = unpack(code)
   local result = string.format("%i %i ", family, slot)
@@ -989,15 +988,18 @@ end
 %   \meta{class}\texttt{\textvisiblespace}\meta{family}\texttt{\textvisiblespace}\meta{slot},
 %   suitable for the right-hand side of \cmd{\Umathchardef}.
 %    \begin{macrocode}
-function print_class_fam_slot(char)
+function lualatex.math.print_class_fam_slot(char)
   local code = tex.getmathcode(char)
   local class, family, slot = unpack(code)
   local result = string.format("%i %i %i ", class, family, slot)
   tex.sprint(cctb.string, result)
 end
-%</lua>
 %    \end{macrocode}
 % \end{function}
+%    \begin{macrocode}
+return lualatex.math
+%</lua>
+%    \end{macrocode}
 %
 %
 % \section{Test files}
