@@ -949,7 +949,7 @@ local err, warn, info, log = luatexbase.provides_module({
   author = "Philipp Stephani",
   licence = "LPPL v1.3+"
 })
-local unpack = unpack
+local unpack = unpack or table.unpack
 local string = string
 local tex = tex
 local cctb = luatexbase.catcodetables
