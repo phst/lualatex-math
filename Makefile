@@ -29,6 +29,7 @@ name := lualatex-math
 texmf := $(shell kpsewhich --var-value=TEXMFHOME)
 branch := lualatex/$(name)
 destdir := $(texmf)/tex/$(branch)
+scriptdir := $(texmf)/scripts/$(name)
 docdir := $(texmf)/doc/$(branch)
 auctexdir := ~/.emacs.d/auctex/style
 
@@ -75,7 +76,9 @@ ctan: $(ctan_arch)
 
 install: all
 	$(INSTALL) -d $(destdir)
-	$(INSTALL_DATA) $(destination) $(destdir)
+	$(INSTALL) -d $(scriptdir)
+	$(INSTALL_DATA) $(dest_sty) $(destdir)
+	$(INSTALL_DATA) $(dest_lua) $(scriptdir)
 	$(INSTALL) -d $(auctexdir)
 	$(INSTALL_DATA) $(auctex_style) $(auctexdir)
 	$(MKTEXLSR)
