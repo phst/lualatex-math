@@ -441,10 +441,12 @@
 %   \cs{lua_now_x:n}}
 %   \changes{v1.1}{2012/10/13}{Update reasoning why \cs{Umathcharnumdef} is not
 %   used here}
+%   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
+%     \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_set_mathchar:NN #1 #2 {
   \luatexUmathchardef #1
-  \lua_now_x:n {
+  \luatex_directlua:D {
     lualatex.math.print_class_fam_slot( \int_eval:n { `#2 } )
   }
   \scan_stop:
@@ -593,10 +595,12 @@
 %   style font.
 %   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to
 %   \cs{lua_now_x:n}}
+%   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
+%     \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \cs_new_nopar:Npn \@@_char_dim:NN #1 #2 {
   #1 \textfont
-  \lua_now_x:n {
+  \luatex_directlua:D {
     lualatex.math.print_fam_slot( \int_eval:n { `#2 } )
   }
 }
@@ -1310,11 +1314,13 @@ end
 %   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to
 %   \cs{lua_now_x:n}}
 %   \changes{v1.1}{2012/10/13}{Allow testing for nonzero kern nodes}
+%   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
+%     \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \NewDocumentCommand \AssertNoSpace { s m } {
   \hbox_set:Nn \l_@@_tmpa_box { #2 }
   \int_if_odd:nTF {
-    \lua_now_x:n {
+    \luatex_directlua:D {
       local~ b = tex.getbox(\int_use:N \l_@@_tmpa_box)
       if~ contains_space(b.head,
           \IfBooleanTF { #1 } { "nonzero" } { nil }) then~
@@ -1344,13 +1350,15 @@ end
 %   one glue or kern node of with \meta{muskip}.
 %   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to
 %   \cs{lua_now_x:n}}
+%   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
+%     \cs{lua_now_x:n}}
 %    \begin{macrocode}
 \makeatletter
 \NewDocumentCommand \AssertMuSpace { m m } {
   \hbox_set:Nn \l_@@_tmpa_box { #1 }
   \hbox_set:Nn \l_@@_tmpb_box { $ \mskip #2 \m@th $ }
   \int_if_odd:nTF {
-    \lua_now_x:n {
+    \luatex_directlua:D {
       local~ b = tex.getbox(\int_use:N \l_@@_tmpa_box)
       local~ s = tex.getbox(\int_use:N \l_@@_tmpb_box)
       if~ contains_space(b.head, s.width) then~
