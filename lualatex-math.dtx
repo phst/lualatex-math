@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright 2011–2013 by Philipp Stephani
+% Copyright 2011–2014 by Philipp Stephani
 %
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -37,7 +37,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{960}
+% \CheckSum{965}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -244,7 +244,7 @@
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2012/08/14]
-\ProvidesExplPackage{lualatex-math}{2014/06/18}{1.3a}%
+\ProvidesExplPackage{lualatex-math}{2014/08/18}{1.4}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
@@ -899,12 +899,17 @@
     \box\z@
   } {
 %    \end{macrocode}
+% \changes{v1.4}{2014/08/18}{Added \cs{ensuremath} to work around
+% \href{https://github.com/phst/lualatex-math/issues/11}{issue~11}}
 % Here the additional set of braces is absolutely necessary, otherwise the
 % changed mathematical style would be applied to the material after the
-% \cmd{\mathchoice} construct.
+% \cmd{\mathchoice} construct.  As the original command works in both text and
+% math mode, we use |\ensuremath| here.
 %    \begin{macrocode}
     {
-      \use:c { luatexcramped \cs_to_str:N #1 } #2
+      \ensuremath {
+        \use:c { luatexcramped \cs_to_str:N #1 } #2
+      }
     }
   }
 }
@@ -1642,6 +1647,15 @@ end
   }
   a^{\AssertMathStyle{4} a}
   \AssertMathStyle{2}
+\end{math}
+%    \end{macrocode}
+% \changes{v1.4}{2014/08/18}{Add test for \cs{smashoperator}}
+% \pkg{mathtools}’ |\smashoperator| command requires |\MT_cramped_internal:Nn|
+% to work in text as well as math mode (see
+% \href{https://github.com/phst/lualatex-math/issues/11}{issue~11}).
+%    \begin{macrocode}
+\begin{math}
+  \smashoperator{\sum_i}
 \end{math}
 %    \end{macrocode}
 % The \pkg{amsopn} package uses |\mathcode| when executing a user-defined
