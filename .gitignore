@@ -1,4 +1,5 @@
 auto/
+build/
 .DS_Store
 *~
 *.tmp
