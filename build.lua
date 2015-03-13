@@ -5,6 +5,7 @@
 module = "lualatex-math"
 
 installfiles = {"*.lua", "*.sty"}
+packtdszip   = true
 sourcefiles  = {"*.cls", "*.dtx", "*.ins"}
 tdsroot      = "lualatex"
 txtfiles     = {"*.rst"}
