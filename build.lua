@@ -8,7 +8,6 @@ installfiles = {"*.lua", "*.sty"}
 packtdszip   = true
 sourcefiles  = {"*.cls", "*.dtx", "*.ins"}
 tdsroot      = "lualatex"
-txtfiles     = {"*.rst"}
 textfiles    = {"MANIFEST", "README"}
 typesetexe   = "lualatex"
 
