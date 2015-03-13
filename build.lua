@@ -9,6 +9,7 @@ packtdszip   = true
 sourcefiles  = {"*.cls", "*.dtx", "*.ins"}
 tdsroot      = "lualatex"
 txtfiles     = {"*.rst"}
+textfiles    = {"MANIFEST", "README"}
 typesetexe   = "lualatex"
 
 kpse.set_program_name("kpsewhich")
