@@ -12,7 +12,6 @@ and the derived files
 
 lualatex-math.sty
 lualatex-math.lua
-test-kernel-alloc.tex
 test-kernel-style.tex
 test-amsmath.tex
 test-unicode.tex

@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright 2011–2014 by Philipp Stephani
+% Copyright 2011–2015 by Philipp Stephani
 %
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -37,7 +37,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{965}
+% \CheckSum{897}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -459,37 +459,8 @@
 %
 % \changes{v0.3}{2011/08/07}{Patched math group allocation to gain access to
 % all families}
-% In \hologo{LuaTeX}, we have 256 math families at our disposal.  Therefore we
-% modify the \hologo{LaTeX} allocation macros \cmd{\newfam} and
-% \cmd{\new@mathgroup} accordingly.
-%
-% First we test whether \cmd{\newfam} and \cmd{\new@mathgroup} are equal.
-%    \begin{macrocode}
-\@@_assert_eq:NN \newfam \new@mathgroup
-%    \end{macrocode}
-%
-% \begin{macro}{\new@mathgroup}
-%   It is enough to modify the maximum number of families known to the
-%   allocation system; the macro \cmd{\alloc@} takes care of the rest.  This
-%   would work even if the \pkg{etex} package weren’t loaded.
-%    \begin{macrocode}
-\@@_patch:NNnnn \new@mathgroup \cs_set_nopar:Npn { } {
-%<@@=>
-  \alloc@ 8 \mathgroup \chardef \sixt@@n
-%<@@=lltxmath>
-} {
-  \alloc@ 8 \mathgroup \chardef \c_two_hundred_fifty_six
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\newfam}
-%   We have to reset \cmd{\newfam} to equal \cmd{\new@mathgroup}.
-%    \begin{macrocode}
-\cs_set_eq:NN \newfam \new@mathgroup
-%    \end{macrocode}
-% \end{macro}
-%
+% \changes{v1.4}{2015/04/04}{Removed patch for math group allocation; the
+% kernel itself now supports all available math families}
 % \Hologo{LuaTeX} enables access to the current mathematical style via the
 % \cmd{\mathstyle} primitive.  For this to work, fraction-like constructs (\eg,
 % \meta{numerator} \cmd{\over} \meta{denominator}) have to be enclosed in a
@@ -1013,7 +984,7 @@ return lualatex.math
 %
 % \section{Test files}
 %
-% Finally six small test files—but not a real test suite.
+% Finally a few small test files—but not a real test suite.
 %
 %
 % \subsection{Common definitions}
@@ -1393,62 +1364,12 @@ end
 % \end{macro}
 %
 %
-% \subsection{\Hologo{LaTeX2e} kernel, allocation of math families}
-%
 % \changes{v0.3}{2011/08/07}{Added test file for modified family allocation
 % scheme}
-% The \hologo{LaTeX2e} kernel itself allocates four families (also known as
-% \enquote{math groups} in \hologo{LaTeX} parlance).  Therefore we should still
-% be able to allocate 252 families.  We do this alternately with \cmd{\newfam},
-% \cmd{\new@mathgroup} and \cmd{\DeclareSymbolFont}.
+% \changes{v1.4}{2015/04/04}{Removed test file for modified family allocation
+% scheme}
 % \changes{v1.2}{2013/01/13}{Replace removed macro \cs{chk_if_free_cs:N}}
 % \changes{v1.2}{2013/01/13}{Track renaming of \cs{int_step_inline:nnnn}}
-%    \begin{macrocode}
-%<*test-kernel-alloc>
-\usepackage{lualatex-math}
-\makeatletter
-\ExplSyntaxOn
-\int_step_inline:nnnn { \c_four } { \c_one } {
-  \c_two_hundred_fifty_five - \c_one
-} {
-  \int_case:nnn { \int_mod:nn { #1 } { \c_three } } {
-    { \c_zero } {
-      \int_new:N \g_@@_family_int
-      \newfam \g_@@_family_int
-      \AssertIntEqual { \g_@@_family_int } { #1 }
-      \cs_undefine:N \g_@@_family_int
-    }
-    { \c_one } {
-      \int_new:N \g_@@_mathgroup_int
-      \new@mathgroup \g_@@_mathgroup_int
-      \AssertIntEqual { \g_@@_mathgroup_int } { #1 }
-      \cs_undefine:N \g_@@_mathgroup_int
-    }
-    { \c_two } {
-      \DeclareSymbolFont { Test #1 } { OT1 } { cmr } { m } { n }
-      \exp_args:Nc \AssertIntEqual { sym Test #1 } { #1 }
-    }
-  } {
-    \@@_fail:x { This~ cannot~ happen }
-  }
-}
-\DeclareSymbolFont { Test 255 } { OT1 } { cmr } { bx } { it }
-\DeclareSymbolFontAlphabet { \TestAlphabet } { Test 255 }
-\exp_args:Nc \AssertIntEqual { sym Test 255 }
-  { \c_two_hundred_fifty_five }
-\ExplSyntaxOff
-\makeatother
-\begin{document}
-\[
-\TestAlphabet{
-  abc
-  \AssertIntEqual{\fam}{255}
-  \AssertIntEqual{\mathgroup}{255}
-}
-\]
-\end{document}
-%</test-kernel-alloc>
-%    \end{macrocode}
 %
 %
 % \subsection{\Hologo{LaTeX2e} kernel, \cs{mathstyle} primitive}
