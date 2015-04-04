@@ -25,3 +25,6 @@ test-*.tex
 *.gls
 *.glg
 *.synctex.gz
+
+# l3build area
+build/*
