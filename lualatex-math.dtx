@@ -37,7 +37,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{897}
+% \CheckSum{878}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -286,22 +286,6 @@
 %    \end{macrocode}
 % \end{l3message}
 %
-% \begin{l3message}{different-meanings}
-%   Issued when two control sequences have different meanings, but should not.
-%    \begin{macrocode}
-\msg_new:nnnn { lualatex-math } { different-meanings } {
-  I've~ expected~ the~ control~ sequences \\
-  #1~ and~ #3 \\
-  to~ have~ the~ same~ meaning,~ but~ their~ meanings~ are~ different.
-} {
-  The~ meaning~ of~ #1~ is: \\
-  #2 \\
-  The~ meaning~ of~ #3~ is: \\
-  #4
-}
-%    \end{macrocode}
-% \end{l3message}
-%
 % \begin{l3message}{macro-expected}
 %   Issued when trying to patch a non-macro.  The first argument must be the
 %   detokenized macro name.
@@ -374,21 +358,6 @@
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\@@_assert_eq:NN}
-%   The macro \cmd{\@@_assert_eq:NN}\meta{first command}\meta{second command}
-%   tests whether the control sequences \meta{first command} and \meta{second
-%   command} have the same meaning, and prints an error message if they do not.
-%    \begin{macrocode}
-\cs_new_protected_nopar:Npn \@@_assert_eq:NN #1 #2 {
-  \cs_if_eq:NNF #1 #2 {
-    \msg_error:nnxxxx { lualatex-math } { different-meanings }
-      { \token_to_str:N #1 } { \token_to_meaning:N #1 }
-      { \token_to_str:N #2 } { \token_to_meaning:N #2 }
-  }
-}
-%    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\@@_patch:NNnnn}
