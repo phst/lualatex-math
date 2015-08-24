@@ -820,10 +820,9 @@
 %
 % For the Lua module, we use the standard \pkg{luatexbase-modutils} template.
 % \changes{v1.3}{2013/08/03}{Stop using the deprecated \func{module} function}
+% \changes{v1.4a}{2015/08/24}{Load all of \pkg{luatexbase}}
 %    \begin{macrocode}
 %<*lua>
-require("luatexbase.modutils")
-require("luatexbase.cctb")
 lualatex = lualatex or {}
 lualatex.math = lualatex.math or {}
 local err, warn, info, log = luatexbase.provides_module({
