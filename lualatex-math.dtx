@@ -1,4 +1,4 @@
-% \iffalse meta-comment
+f% \iffalse meta-comment
 %
 % Copyright 2011–2015 by Philipp Stephani
 %
@@ -252,7 +252,7 @@
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
 \RequirePackage { filehook } [ 2011/03/09 ]
-\RequireLuaModule { lualatex-math } [ 2013/08/03 ]
+\directlua{require(lualatex-math)}
 %    \end{macrocode}
 %
 % \begin{macro}{\@@_restore_catcode:N}
