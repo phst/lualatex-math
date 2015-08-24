@@ -844,8 +844,11 @@ luatexbase.provides_module({
 local unpack = unpack or table.unpack
 %    \end{macrocode}
 % \end{function}
+%   \changes{v1.4a}{2015/08/24}{Pcik up new name for string catcode table
+%     where available}
 %    \begin{macrocode}
-local cctb = luatexbase.catcodetables
+local cctb = luatexbase.catcodetables or 
+  {string = luatexbase.registernumber("catcodetable@string")}
 %    \end{macrocode}
 %
 % \begin{function}{print_fam_slot}
