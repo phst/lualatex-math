@@ -826,7 +826,7 @@
 %<*lua>
 lualatex = lualatex or {}
 lualatex.math = lualatex.math or {}
-local err, warn, info, log = luatexbase.provides_module({
+luatexbase.provides_module({
   name = "lualatex-math",
   date = "2013/08/03",
   version = 1.3,
