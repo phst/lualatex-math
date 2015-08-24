@@ -1282,7 +1282,7 @@ end
 %    \begin{macrocode}
 %<*test-kernel-style>
 \usepackage{lualatex-math}
-\directlua{tex.enableprimitives("luatex",tex.extraprimitives({"luatex"}))}
+\directlua{tex.enableprimitives("luatex",tex.extraprimitives("luatex"))}
 \begin{document}
 \begin{displaymath}
   \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
@@ -1335,7 +1335,7 @@ end
 %    \begin{macrocode}
 %<*test-amsmath>
 \usepackage{lualatex-math}
-\directlua{tex.enableprimitives("luatex",tex.extraprimitives({"luatex"}))}
+\directlua{tex.enableprimitives("luatex",tex.extraprimitives("luatex"))}
 \newsavebox{\testbox}
 %    \end{macrocode}
 % \end{macro}
