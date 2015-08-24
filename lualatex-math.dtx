@@ -236,6 +236,9 @@
 %
 %
 % \section{Implementation of the \hologo{LaTeX2e} package}
+% 
+% \changes{v1.4a}{2015/08/24}{\pkg{Use \pkg{expl3} versions of \hologo{LuaTeX}
+%   math primitives}
 %
 % \subsection{Requirements}
 %
@@ -334,7 +337,6 @@
 }
 %    \end{macrocode}
 %
-%
 % \subsection{Patching}
 %
 % \begin{macro}{\@@_temp:w}
@@ -396,10 +398,11 @@
 %   used here}
 %   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
 %     \cs{lua_now_x:n}}
+%   \changes{v1.4a}{2015/08/24}{\cs{lua_now_x:n} is back}
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_set_mathchar:NN #1 #2 {
   \utex_mathchardef:D #1
-  \luatex_directlua:D {
+  \lua_now_x:n {
     lualatex.math.print_class_fam_slot( \int_eval:n { `#2 } )
   }
   \scan_stop:
@@ -488,7 +491,7 @@
 %    \begin{macrocode}
 \cs_new_nopar:Npn \@@_char_dim:NN #1 #2 {
   #1 \textfont
-  \luatex_directlua:D {
+  \lua_now_x:n {
     lualatex.math.print_fam_slot( \int_eval:n { `#2 } )
   }
 }
@@ -1196,7 +1199,7 @@ end
 \NewDocumentCommand \AssertNoSpace { s m } {
   \hbox_set:Nn \l_@@_tmpa_box { #2 }
   \int_if_odd:nTF {
-    \luatex_directlua:D {
+    \lua_now_x:n {
       local~ b = tex.getbox(\int_use:N \l_@@_tmpa_box)
       if~ contains_space(b.head,
           \IfBooleanTF { #1 } { "nonzero" } { nil }) then~
@@ -1234,7 +1237,7 @@ end
   \hbox_set:Nn \l_@@_tmpa_box { #1 }
   \hbox_set:Nn \l_@@_tmpb_box { $ \mskip #2 \m@th $ }
   \int_if_odd:nTF {
-    \luatex_directlua:D {
+    \lua_now_x:n {
       local~ b = tex.getbox(\int_use:N \l_@@_tmpa_box)
       local~ s = tex.getbox(\int_use:N \l_@@_tmpb_box)
       if~ contains_space(b.head, s.width) then~
