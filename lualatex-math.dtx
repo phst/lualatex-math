@@ -239,6 +239,7 @@
 % 
 % \changes{v1.4a}{2015/08/24}{\pkg{Use \pkg{expl3} versions of \hologo{LuaTeX}
 %   math primitives}
+% \changes{v1.4a}{2015/08/24}{Avoid \cs{RequireLuaModule}}
 %
 % \subsection{Requirements}
 %
@@ -252,7 +253,7 @@
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
 \RequirePackage { filehook } [ 2011/03/09 ]
-\RequireLuaModule { lualatex-math } [ 2013/08/03 ]
+\directlua{require("lualatex-math")}
 %    \end{macrocode}
 %
 % \begin{macro}{\@@_restore_catcode:N}
