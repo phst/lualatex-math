@@ -187,8 +187,8 @@
 %   usual with \hologo{LaTeX}.
 %
 %   One user-visible change is that the new
-%   \DescribeMacros{\mathstyle\luatexmathstyle}\cmd{\mathstyle} primitive
-%   (usually called \cmd{\luatexmathstyle} in \hologo{LuaLaTeX}) should work in
+%   \DescribeMacros{\mathstyle}\cmd{\mathstyle} primitive
+%   should work in
 %   all cases after the \thispackage package has been loaded, provided you use
 %   the high-level macros \DescribeMacros{\frac\binom\genfrac}\cmd{\frac},
 %   \cmd{\binom}, and \cmd{\genfrac}.  The fraction-like \hologo{TeX}
@@ -221,8 +221,8 @@
 %   werden, lädst, können Probleme auftreten, wie bei \hologo{LaTeX} üblich.
 %
 %   Eine für den Benutzer sichtbare Änderung besteht darin, dass der neue
-%   primitive Befehl \DescribeMacros{\mathstyle\luatexmathstyle}|\mathstyle|
-%   (in \hologo{LuaLaTeX} allgemein als |\luatexmathstyle| bekannt) in allen
+%   primitive Befehl \DescribeMacros{\mathstyle}|\mathstyle|
+%   in allen
 %   Fällen funktionieren sollte, nachdem \thispackage geladen wurde, unter der
 %   Bedingung, dass die High-Level-Makros
 %   \DescribeMacros{\frac\binom\genfrac}|\frac|, |\binom| und |\genfrac|
@@ -236,6 +236,10 @@
 %
 %
 % \section{Implementation of the \hologo{LaTeX2e} package}
+% 
+% \changes{v1.4a}{2015/08/24}{\pkg{Use \pkg{expl3} versions of \hologo{LuaTeX}
+%   math primitives}
+% \changes{v1.4a}{2015/08/24}{Avoid \cs{RequireLuaModule}}
 %
 % \subsection{Requirements}
 %
@@ -243,13 +247,13 @@
 %<*package>
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
-\RequirePackage{expl3}[2012/08/14]
-\ProvidesExplPackage{lualatex-math}{2014/08/18}{1.4}%
+\RequirePackage{expl3}[2015/06/26]
+\ProvidesExplPackage{lualatex-math}{2015/08/24}{1.4a}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \RequirePackage { luatexbase } [ 2010/05/27 ]
 \RequirePackage { filehook } [ 2011/03/09 ]
-\RequireLuaModule { lualatex-math } [ 2013/08/03 ]
+\directlua{require("lualatex-math")}
 %    \end{macrocode}
 %
 % \begin{macro}{\@@_restore_catcode:N}
@@ -334,7 +338,6 @@
 }
 %    \end{macrocode}
 %
-%
 % \subsection{Patching}
 %
 % \begin{macro}{\@@_temp:w}
@@ -342,22 +345,6 @@
 %    \begin{macrocode}
 \cs_new_eq:NN \@@_temp:w \prg_do_nothing:
 %    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\luatexUmathcode}
-% \begin{macro}{\luatexUmathcodenum}
-% \begin{macro}{\luatexUmathchardef}
-%   We need the extended versions of \cmd{\mathcode} and \cmd{\mathchardef}.
-%   The command \cmd{\luatexbase@ensure@primitive}\marg{name} makes sure that
-%   the \hologo{LuaTeX} primitive \cs{\meta{name}} is available under the
-%   qualified name \cs{luatex\meta{name}}.
-%    \begin{macrocode}
-\luatexbase@ensure@primitive { Umathcode }
-\luatexbase@ensure@primitive { Umathcodenum }
-\luatexbase@ensure@primitive { Umathchardef }
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
 % \end{macro}
 %
 % \begin{macro}{\@@_patch:NNnnn}
@@ -412,10 +399,11 @@
 %   used here}
 %   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
 %     \cs{lua_now_x:n}}
+%   \changes{v1.4a}{2015/08/24}{\cs{lua_now_x:n} is back}
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_set_mathchar:NN #1 #2 {
-  \luatexUmathchardef #1
-  \luatex_directlua:D {
+  \utex_mathchardef:D #1
+  \lua_now_x:n {
     lualatex.math.print_class_fam_slot( \int_eval:n { `#2 } )
   }
   \scan_stop:
@@ -437,14 +425,6 @@
 % \hologo{plainTeX} remnants \cmd{\choose}, \cmd{\brack} and \cmd{\brace}
 % should be discouraged.
 %
-% \begin{macro}{\luatexUstack}
-%   First we make sure that we can use the \cmd{\Ustack} primitive (under the
-%   name \cmd{\luatexUstack}).
-%    \begin{macrocode}
-\luatexbase@ensure@primitive { Ustack }
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}{\frac}
 %   Here we assume that nobody except \pkg{amsmath} redefines \cmd{\frac}.
 %   This is obviously not the case, but we ignore other packages (\eg,
@@ -463,7 +443,7 @@
 % To do: do we need the additional set of braces around \cmd{\Ustack}?
 %    \begin{macrocode}
       {
-        \luatexUstack { \group_begin: #1 \group_end: \over #2 }
+        \utex_stack:D { \group_begin: #1 \group_end: \over #2 }
       }
     }
   }
@@ -484,34 +464,6 @@
 % \item The fraction commands \cmd{\frac} and \cmd{\genfrac} don’t use the
 %   \cmd{\Ustack} primitive.
 % \end{itemize}
-%
-% \begin{macro}{\luatexalignmark}
-% \begin{macro}{\luatexUstartmath}
-% \begin{macro}{\luatexUstopmath}
-%   We use the primitives corresponding to the alignment mark (\verb+#+) and to
-%   the inline math switches; this is more semantical and might lead to better
-%   error messages.
-%    \begin{macrocode}
-\luatexbase@ensure@primitive { alignmark }
-\luatexbase@ensure@primitive { Ustartmath }
-\luatexbase@ensure@primitive { Ustopmath }
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\luatexUmathstacknumup}
-% \begin{macro}{\luatexUmathstackdenomdown}
-% \begin{macro}{\luatexUmathstackvgap}
-%   Now we require the font parameters we will use.
-%    \begin{macrocode}
-\luatexbase@ensure@primitive { Umathstacknumup }
-\luatexbase@ensure@primitive { Umathstackdenomdown }
-\luatexbase@ensure@primitive { Umathstackvgap }
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-% \end{macro}
 %
 % \begin{macro}{\c_@@_std_minus_mathcode_int}
 % \begin{macro}{\c_@@_std_equal_mathcode_int}
@@ -540,7 +492,7 @@
 %    \begin{macrocode}
 \cs_new_nopar:Npn \@@_char_dim:NN #1 #2 {
   #1 \textfont
-  \luatex_directlua:D {
+  \lua_now_x:n {
     lualatex.math.print_fam_slot( \int_eval:n { `#2 } )
   }
 }
@@ -585,8 +537,8 @@
 % \end{macro}
 % Finally, we restore the original mathematical codes of the two signs.
 %    \begin{macrocode}
-    \luatexUmathcodenum `\- \l_@@_minus_mathchar
-    \luatexUmathcodenum `\= \l_@@_equal_mathchar
+    \utex_mathcodenum:D `\- \l_@@_minus_mathchar
+    \utex_mathcodenum:D `\= \l_@@_equal_mathchar
   }
 }
 %    \end{macrocode}
@@ -673,19 +625,19 @@
     \restore@math@cr
     \default@tag
     \skip_set:Nn \baselineskip {
-      \luatexUmathstacknumup \scriptstyle
-      + \luatexUmathstackdenomdown \scriptstyle
+      \utex_stacknumup:D \scriptstyle
+      + \utex_stackdenomdown:D \scriptstyle
     }
-    \lineskip \luatexUmathstackvgap \scriptstyle
+    \lineskip \utex_stackvgap:D \scriptstyle
     \lineskiplimit \lineskip
     \ialign
     \c_group_begin_token
     \token_if_eq_meaning:NNT c #1 { \hfil }
-    \luatexUstartmath
+    \utex_startmath:D
     \m@th
     \scriptstyle
-    \luatexalignmark \luatexalignmark
-    \luatexUstopmath
+    \luatex_alignmark:D \luatex_alignmark:D
+    \utex_stopmath:D
     \hfil
     \crcr
   }
@@ -703,7 +655,7 @@
     }
   } {
     {
-      \luatexUstack { \group_begin: #1 \group_end: \@@over #2 }
+      \utex_stack:D { \group_begin: #1 \group_end: \@@over #2 }
 %<@@=lltxmath>
     }
   }
@@ -722,7 +674,7 @@
   } {
     {
       #1 {
-        \luatexUstack {
+        \utex_stack:D {
           \group_begin: #4 \group_end: #2 #3 \scan_stop: #5
         }
       }
@@ -762,7 +714,7 @@
     \char_set_mathcode:nn { `\' } { 39 }
     \char_set_mathcode:nn { `\* } { 42 }
     \char_set_mathcode:nn { `\. } { "613A }
-    \int_compare:nNnF { \luatexUmathcodenum `\- } = { 45 } {
+    \int_compare:nNnF { \utex_mathcodenum:D `\- } = { 45 } {
       \@@_set_mathchar:NN \std@minus \-
     }
     \char_set_mathcode:nn { `\- } { 45 }
@@ -780,23 +732,6 @@
 % \pkg{mathtools}’ \cmd{\cramped} command and others that make use of its
 % internal version use a hack involving a null radical.  \Hologo{LuaTeX} has
 % primitives for setting material in cramped mode, so we make use of them.
-%
-% \begin{macro}{\luatexcrampeddisplaystyle}
-% \begin{macro}{\luatexcrampedtextstyle}
-% \begin{macro}{\luatexcrampedscriptstyle}
-% \begin{macro}{\luatexcrampedscriptscriptstyle}
-%   First we make sure that the needed primitives for cramped styles are
-%   available.
-%    \begin{macrocode}
-\luatexbase@ensure@primitive { crampeddisplaystyle }
-\luatexbase@ensure@primitive { crampedtextstyle }
-\luatexbase@ensure@primitive { crampedscriptstyle }
-\luatexbase@ensure@primitive { crampedscriptscriptstyle }
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
 %
 % \begin{macro}{\MT_cramped_internal:Nn}
 %   The macro \cmd{\MT_cramped_internal:Nn}\meta{style}\marg{expression}
@@ -848,7 +783,7 @@
 %    \begin{macrocode}
     {
       \ensuremath {
-        \use:c { luatexcramped \cs_to_str:N #1 } #2
+        \use:c { luatex_cramped \cs_to_str:N #1 :D } #2
       }
     }
   }
@@ -886,13 +821,12 @@
 %
 % For the Lua module, we use the standard \pkg{luatexbase-modutils} template.
 % \changes{v1.3}{2013/08/03}{Stop using the deprecated \func{module} function}
+% \changes{v1.4a}{2015/08/24}{Load all of \pkg{luatexbase}}
 %    \begin{macrocode}
 %<*lua>
-require("luatexbase.modutils")
-require("luatexbase.cctb")
 lualatex = lualatex or {}
 lualatex.math = lualatex.math or {}
-local err, warn, info, log = luatexbase.provides_module({
+luatexbase.provides_module({
   name = "lualatex-math",
   date = "2013/08/03",
   version = 1.3,
@@ -910,8 +844,11 @@ local err, warn, info, log = luatexbase.provides_module({
 local unpack = unpack or table.unpack
 %    \end{macrocode}
 % \end{function}
+%   \changes{v1.4a}{2015/08/24}{Pcik up new name for string catcode table
+%     where available}
 %    \begin{macrocode}
-local cctb = luatexbase.catcodetables
+local cctb = luatexbase.catcodetables or 
+  {string = luatexbase.registernumber("catcodetable@string")}
 %    \end{macrocode}
 %
 % \begin{function}{print_fam_slot}
@@ -1144,7 +1081,7 @@ return lualatex.math
 %   \meta{expression}.
 %    \begin{macrocode}
 \NewDocumentCommand \AssertMathStyle { m } {
-  \AssertIntEqual { \luatexmathstyle } { #1 }
+  \AssertIntEqual { \luatex_mathstyle:D } { #1 }
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1156,14 +1093,14 @@ return lualatex.math
 %   argument specification \texttt{n}.
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_assert_cramped:Nx #1 #2 {
-  \int_set:Nn \l_@@_tmpa_int { \luatexmathstyle }
+  \int_set:Nn \l_@@_tmpa_int { \luatex_mathstyle:D }
   \bool_if:nTF {
     \int_compare_p:nNn { \l_@@_tmpa_int } > { \c_minus_one }
     &&
     #1 { \l_@@_tmpa_int }
   } {
     \@@_pass:x {
-      \exp_not:N \luatexmathstyle
+      \exp_not:N \luatex_mathstyle:D
       \c_@@_equal_tl
       \int_use:N \l_@@_tmpa_int
       \c_space_tl
@@ -1171,7 +1108,7 @@ return lualatex.math
     }
   } {
     \@@_fail:x {
-      \exp_not:N \luatexmathstyle
+      \exp_not:N \luatex_mathstyle:D
       \c_@@_equal_tl
       \int_use:N \l_@@_tmpa_int
       \c_space_tl
@@ -1265,7 +1202,7 @@ end
 \NewDocumentCommand \AssertNoSpace { s m } {
   \hbox_set:Nn \l_@@_tmpa_box { #2 }
   \int_if_odd:nTF {
-    \luatex_directlua:D {
+    \lua_now_x:n {
       local~ b = tex.getbox(\int_use:N \l_@@_tmpa_box)
       if~ contains_space(b.head,
           \IfBooleanTF { #1 } { "nonzero" } { nil }) then~
@@ -1303,7 +1240,7 @@ end
   \hbox_set:Nn \l_@@_tmpa_box { #1 }
   \hbox_set:Nn \l_@@_tmpb_box { $ \mskip #2 \m@th $ }
   \int_if_odd:nTF {
-    \luatex_directlua:D {
+    \lua_now_x:n {
       local~ b = tex.getbox(\int_use:N \l_@@_tmpa_box)
       local~ s = tex.getbox(\int_use:N \l_@@_tmpb_box)
       if~ contains_space(b.head, s.width) then~
@@ -1348,6 +1285,7 @@ end
 %    \begin{macrocode}
 %<*test-kernel-style>
 \usepackage{lualatex-math}
+\directlua{tex.enableprimitives("luatex",tex.extraprimitives("luatex"))}
 \begin{document}
 \begin{displaymath}
   \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
@@ -1400,6 +1338,7 @@ end
 %    \begin{macrocode}
 %<*test-amsmath>
 \usepackage{lualatex-math}
+\directlua{tex.enableprimitives("luatex",tex.extraprimitives("luatex"))}
 \newsavebox{\testbox}
 %    \end{macrocode}
 % \end{macro}
