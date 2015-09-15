@@ -17,63 +17,45 @@ Don't change this file in any respect.
 %%   Right brace   \}     Tilde         \~}
 %%
 Author: Philipp Stephani and Joseph Wright
-============================================================
-TEST 1: No space after "," in $1,234$
-============================================================
-> \box27=
-\vbox(6.76+1.41)x345.0, direction TLT
-.\hbox(6.76+1.41)x345.0, glue set 307.5fil, direction TLT
-..\whatsit
-...\localinterlinepenalty=0
-...\localbrokenpenalty=0
-...\localleftbox=null
-...\localrightbox=null
-..\hbox(0.0+0.0)x15.0, direction TLT
-..\mathon
-..\l_fontspec_font 1
-..\l_fontspec_font ,
-..\l_fontspec_font 2
-..\l_fontspec_font 3
-..\l_fontspec_font 4
-..\mathoff
-..\penalty 10000
-..\glue(\parfillskip) 0.0 plus 1.0fil
-..\glue(\rightskip) 0.0
-! OK.
-<argument> \l_tmpa_box 
-l. ...  {\SHOWBOX{$1,234$}}
-============================================================
-============================================================
-TEST 2: Space after "," in $(x, y)$
-============================================================
-> \box27=
-\vbox(6.76+1.83)x345.0, direction TLT
-.\hbox(6.76+1.83)x345.0, glue set 308.71338fil, direction TLT
-..\whatsit
-...\localinterlinepenalty=0
-...\localbrokenpenalty=0
-...\localleftbox=null
-...\localrightbox=null
-..\hbox(0.0+0.0)x15.0, direction TLT
-..\mathon
-..\l_fontspec_font (
-..\l_fontspec_font 𝑥
-..\l_fontspec_font ,
-..\glue(\thinmuskip) 1.66663
-..\l_fontspec_font 𝑦
-..\l_fontspec_font )
-..\mathoff
-..\penalty 10000
-..\glue(\parfillskip) 0.0 plus 1.0fil
-..\glue(\rightskip) 0.0
-! OK.
-<argument> \l_tmpa_box 
-l. ...  {\SHOWBOX{$(x, y)$}}
-============================================================
-============================================================
-TEST 3: \mathcomma is "1C0003B
-============================================================
-> \mathcomma=12582956.
-<recently read> }
-l. ...  {\SHOWINT\mathcomma}
-============================================================
+> 12582956.
+l. ...\showthe\mathcomma
+Completed box being shipped out [1]
+\vbox(578.15999+0.0)x469.75499, direction TLT
+.\glue 0.0
+.\vbox(578.15999+0.0)x469.75499, direction TLT
+..\vbox(0.0+0.0)x469.75499, direction TLT
+...\glue 0.0 plus 1.0fil
+...\hbox(0.0+0.0)x469.75499, direction TLT
+..\glue 0.0
+..\glue(\lineskip) 0.0
+..\vbox(578.15999+0.0)x469.75499, glue set 566.32996fil, direction TLT
+...\glue(\topskip) 3.24
+...\hbox(6.76+1.83)x469.75499, glue set 403.19064fil, direction TLT
+....\whatsit
+.....\localinterlinepenalty=0
+.....\localbrokenpenalty=0
+.....\localleftbox=null
+.....\localrightbox=null
+....\hbox(0.0+0.0)x20.0, direction TLT
+....\mathon
+....\l_fontspec_font 1
+....\l_fontspec_font ,
+....\l_fontspec_font 2
+....\l_fontspec_font 3
+....\l_fontspec_font 4
+....\glue 2.77771 plus 2.77771
+....\l_fontspec_font (
+....\l_fontspec_font 𝑥
+....\l_fontspec_font ,
+....\glue(\thinmuskip) 1.66663
+....\l_fontspec_font 𝑦
+....\l_fontspec_font )
+....\mathoff
+....\penalty 10000
+....\glue(\parfillskip) 0.0 plus 1.0fil
+....\glue(\rightskip) 0.0
+...\glue 0.0 plus 1.0fil
+...\glue 0.0
+..\glue(\baselineskip) 0.0
+..\hbox(0.0+0.0)x469.75499, direction TLT
+(.aux)

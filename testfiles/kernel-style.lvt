@@ -8,13 +8,13 @@
 
 \OMIT
 
-\documentclass{article}
+\documentclass{minimal}
 
 \usepackage{expl3}
 \ExplSyntaxOn
 \cs_new_protected:Npn \AssertIntEqual #1#2
   { \int_compare:nNnTF {#1} = {#2} \TRUE \ERROR }
-\cs_new_protected:Npn \AssertMathStyle #1
+\cs_new_protected:Npn \AssertMathStyle
   { \AssertIntEqual \luatex_mathstyle:D }
 \ExplSyntaxOff
 
@@ -24,6 +24,10 @@
 \directlua{tex.enableprimitives("",tex.extraprimitives("luatex"))}
 
 \begin{document}
+
+\begin{equation*}
+  \sqrt{} a
+\end{equation*}
 
 \TIMO
 
@@ -63,5 +67,7 @@
   \crampedscriptstyle
   \frac{\AssertMathStyle{7}}{\AssertMathStyle{7}}
 \end{math}
+
+\OMIT
 
 \END

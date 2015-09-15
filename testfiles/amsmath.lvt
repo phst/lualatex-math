@@ -8,7 +8,7 @@
 
 \OMIT
 
-\documentclass{article}
+\documentclass{minimal}
 
 \usepackage{expl3}
 \ExplSyntaxOn
@@ -26,14 +26,6 @@
   {
     \int_if_even:nTF \luatex_mathstyle:D \TRUE \ERROR }
   }
-\cs_new_protected:Npn \SHOWBOX #1
-  {
-    \group_begin:
-      \vbox_set:Nn \l_tmpa_box {#1}
-      \box_show:N \l_tmpa_box
-    \group_end:
-  }
-\cs_new_eq:NN \SHOWINT \int_show:N
 \ExplSyntaxOff
 
 \usepackage{lualatex-math}
@@ -167,15 +159,19 @@
   \smashoperator{\sum_i}
 \end{math}
 
-\TEST{Spacing with \Operator...}
-  {%
-    \SHOWBOX{$\Operator$}
-    \SHOWBOX{$\OperatorWithLimits$}
-    \SHOWBOX{$\OperatorWithPunctuation$}
-    \mathcode`\-=45 \relax
-    \SHOWBOX{$\Operator$}
-    \SHOWBOX{$\OperatorWithLimits$}
-    \SHOWBOX{$\OperatorWithPunctuation$}
-  }
+\setbox0=\vbox{%
+% Check spacing is correct
+% See the definitions in the preamble
+  $\Operator$
+  $\OperatorWithLimits$
+  $\OperatorWithPunctuation$
+  \mathcode`\-=45 \relax
+  $\Operator$
+  $\OperatorWithLimits$
+  $\OperatorWithPunctuation$
+}
+\showbox0
 
-\END
+\OMIT
+
+\end{document}

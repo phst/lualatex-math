@@ -8,13 +8,13 @@
 
 \OMIT
 
-\documentclass{article}
+\documentclass{minimal}
 
 \usepackage{expl3}
 \ExplSyntaxOn
 \cs_new_protected:Npn \AssertIntEqual #1#2
   { \int_compare:nNnTF {#1} = {#2} \TRUE \ERROR }
-\cs_new_protected:Npn \AssertMathStyle #1
+\cs_new_protected:Npn \AssertMathStyle
   { \AssertIntEqual \luatex_mathstyle:D }
 \ExplSyntaxOff
 
@@ -24,6 +24,10 @@
 \usepackage{lualatex-math}
 
 \begin{document}
+
+\begin{equation*}
+  \sqrt{} a
+\end{equation*}
 
 \TIMO
 
@@ -35,4 +39,6 @@
   \tfrac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
 \end{equation*}
 
-\END
+\OMIT
+
+\end{document}

@@ -8,36 +8,22 @@
 
 \OMIT
 
-\documentclass{article}
+\documentclass{minimal}
 \usepackage{unicode-math}[2011/05/05]
 \setmathfont{XITS Math}
 \usepackage{lualatex-math}
 \usepackage{icomma}
 
-\ExplSyntaxOn
-\cs_new_protected:Npn \SHOWBOX #1
-  {
-    \group_begin:
-      \vbox_set:Nn \l_tmpa_box {#1}
-      \box_show:N \l_tmpa_box
-    \group_end:
-  }
-\cs_new_eq:NN \SHOWINT \int_show:N
-\ExplSyntaxOff
-
 \begin{document}
 
-$1,234 \; (x, y)$
+\setbox0=\hbox{$1,234 \; (x, y)$}
 
 \TIMO
 
-\TEST{No space after "," in $1,234$}
-  {\SHOWBOX{$1,234$}}
+\showoutput
 
-\TEST{Space after "," in $(x, y)$}
-  {\SHOWBOX{$(x, y)$}}
+\showthe\mathcomma
 
-\TEST{\mathcomma is "0C0002C}
-  {\SHOWINT\mathcomma}
+$1,234 \; (x, y)$
 
-\END
+\end{document}
