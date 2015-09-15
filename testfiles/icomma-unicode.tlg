@@ -1,0 +1,61 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+Author: Philipp Stephani and Joseph Wright
+> 12582956.
+l. ...\showthe\mathcomma
+Completed box being shipped out [1]
+\vbox(578.15999+0.0)x469.75499, direction TLT
+.\glue 0.0
+.\vbox(578.15999+0.0)x469.75499, direction TLT
+..\vbox(0.0+0.0)x469.75499, direction TLT
+...\glue 0.0 plus 1.0fil
+...\hbox(0.0+0.0)x469.75499, direction TLT
+..\glue 0.0
+..\glue(\lineskip) 0.0
+..\vbox(578.15999+0.0)x469.75499, glue set 566.32996fil, direction TLT
+...\glue(\topskip) 3.24
+...\hbox(6.76+1.83)x469.75499, glue set 403.19064fil, direction TLT
+....\whatsit
+.....\localinterlinepenalty=0
+.....\localbrokenpenalty=0
+.....\localleftbox=null
+.....\localrightbox=null
+....\hbox(0.0+0.0)x20.0, direction TLT
+....\mathon
+....\l_fontspec_font 1
+....\l_fontspec_font ,
+....\l_fontspec_font 2
+....\l_fontspec_font 3
+....\l_fontspec_font 4
+....\glue 2.77771 plus 2.77771
+....\l_fontspec_font (
+....\l_fontspec_font 𝑥
+....\l_fontspec_font ,
+....\glue(\thinmuskip) 1.66663
+....\l_fontspec_font 𝑦
+....\l_fontspec_font )
+....\mathoff
+....\penalty 10000
+....\glue(\parfillskip) 0.0 plus 1.0fil
+....\glue(\rightskip) 0.0
+...\glue 0.0 plus 1.0fil
+...\glue 0.0
+..\glue(\baselineskip) 0.0
+..\hbox(0.0+0.0)x469.75499, direction TLT
+(.aux)

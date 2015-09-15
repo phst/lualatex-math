@@ -1,0 +1,44 @@
+% Copyright 2011, 2012, 2013 Philipp Stephani
+% Copyright 2015 Philipp Stephani and Joseph Wright
+\input{regression-test}
+
+\START
+
+\AUTHOR{Philipp Stephani and Joseph Wright}
+
+\OMIT
+
+\documentclass{minimal}
+
+\usepackage{expl3}
+\ExplSyntaxOn
+\cs_new_protected:Npn \AssertIntEqual #1#2
+  { \int_compare:nNnTF {#1} = {#2} \TRUE \ERROR }
+\cs_new_protected:Npn \AssertMathStyle
+  { \AssertIntEqual \luatex_mathstyle:D }
+\ExplSyntaxOff
+
+\usepackage{amsmath}
+\usepackage{unicode-math}[2011/05/05]
+\setmathfont{XITS Math}
+\usepackage{lualatex-math}
+
+\begin{document}
+
+\begin{equation*}
+  \sqrt{} a
+\end{equation*}
+
+\TIMO
+
+\begin{equation*}
+  \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dfrac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tfrac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+\end{equation*}
+
+\OMIT
+
+\end{document}
