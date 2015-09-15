@@ -17,26 +17,10 @@ Don't change this file in any respect.
 %%   Right brace   \}     Tilde         \~}
 %%
 Author: Philipp Stephani and Joseph Wright
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
-LaTeX Font Info:    Font shape `EU2/XITSMath(1)/m/n' will be
-(Font)              scaled to size 10.00015pt on input line 29.
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
-LaTeX Font Info:    Font shape `EU2/XITSMath(1)/m/n' will be
-(Font)              scaled to size 7.4712pt on input line 29.
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
-LaTeX Font Info:    Font shape `EU2/XITSMath(1)/m/n' will be
-(Font)              scaled to size 6.0294pt on input line 29.
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
-LaTeX Font Info:    Font shape `EU2/XITSMath(2)/m/n' will be
-(Font)              scaled to size 9.99985pt on input line 29.
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
-LaTeX Font Info:    Font shape `EU2/XITSMath(2)/m/n' will be
-(Font)              scaled to size 7.47098pt on input line 29.
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
-LaTeX Font Info:    Font shape `EU2/XITSMath(2)/m/n' will be
-(Font)              scaled to size 6.0292pt on input line 29.
-luaotfload | load : Lookup/name: "XITSMath" -> "xits-math.otf"
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 26.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 26.
 TRUE
 TRUE
 TRUE

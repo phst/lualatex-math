@@ -9,15 +9,19 @@
 \OMIT
 
 \documentclass{article}
+
+\usepackage{expl3}
+\ExplSyntaxOn
+\cs_new_protected:Npn \AssertIntEqual #1#2
+  { \int_compare:nNnTF {#1} = {#2} \TRUE \ERROR }
+\cs_new_protected:Npn \AssertMathStyle #1
+  { \AssertIntEqual \luatex_mathstyle:D }
+\ExplSyntaxOff
+
 \usepackage{amsmath}
 \usepackage{unicode-math}[2011/05/05]
 \setmathfont{XITS Math}
 \usepackage{lualatex-math}
-
-\ExplSyntaxOn
-\cs_new_protected:Npn \AssertMathStyle #1
-  { \int_compare:nNnTF {#1} = \luatex_mathstyle:D \TRUE \ERROR }
-\ExplSyntaxOff
 
 \begin{document}
 
