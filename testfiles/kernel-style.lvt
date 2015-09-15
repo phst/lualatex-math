@@ -1,0 +1,66 @@
+% Copyright 2011, 2012, 2013 Philipp Stephani
+% Copyright 2015 Philipp Stephani and Joseph Wright
+\input{regression-test}
+
+\START
+
+\AUTHOR{Philipp Stephani and Joseph Wright}
+
+\OMIT
+
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{unicode-math}[2011/05/05]
+\setmathfont{XITS Math}
+\usepackage{lualatex-math}
+
+\ExplSyntaxOn
+\cs_new_protected:Npn \AssertMathStyle #1
+  { \int_compare:nNnTF {#1} = \luatex_mathstyle:D \TRUE \ERROR }
+\ExplSyntaxOff
+
+% Needed until next kernel update
+\directlua{tex.enableprimitives("",tex.extraprimitives("luatex"))}
+
+\begin{document}
+
+\TIMO
+
+\begin{displaymath}
+  \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \sqrt{\frac{\AssertMathStyle{3}}{\AssertMathStyle{3}}}
+  \displaystyle
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \crampeddisplaystyle
+  \frac{\AssertMathStyle{3}}{\AssertMathStyle{3}}
+  \textstyle
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \crampedtextstyle
+  \frac{\AssertMathStyle{5}}{\AssertMathStyle{5}}
+  \scriptstyle
+  \frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \crampedscriptstyle
+  \frac{\AssertMathStyle{7}}{\AssertMathStyle{7}}
+\end{displaymath}
+\begin{math}
+  \AssertMathStyle{2} \sqrt{\AssertMathStyle{3}}
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \sqrt{\frac{\AssertMathStyle{5}}{\AssertMathStyle{5}}}
+  \displaystyle
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \crampeddisplaystyle
+  \frac{\AssertMathStyle{3}}{\AssertMathStyle{3}}
+  \textstyle
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \crampedtextstyle
+  \frac{\AssertMathStyle{5}}{\AssertMathStyle{5}}
+  \scriptstyle
+  \frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \crampedscriptstyle
+  \frac{\AssertMathStyle{7}}{\AssertMathStyle{7}}
+\end{math}
+
+\END
