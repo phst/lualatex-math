@@ -247,7 +247,7 @@
 %<*package>
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
-\RequirePackage{expl3}[2015/06/26]
+\RequirePackage{expl3}[2015/09/07]
 \ProvidesExplPackage{lualatex-math}{2015/08/24}{1.4a}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
@@ -332,7 +332,7 @@
 % immediately.  Loading the \pkg{luatexbase} module will already have produced
 % an error, but we issue another one for clarity.
 %    \begin{macrocode}
-\luatex_if_engine:F {
+\sys_if_engine_luatex:F {
   \msg_error:nn { lualatex-math } { luatex-required }
   \endinput
 }
