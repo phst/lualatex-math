@@ -30,6 +30,9 @@
 
 \usepackage{lualatex-math}
 
+% Needed until next kernel update
+\directlua{tex.enableprimitives("",tex.extraprimitives("luatex"))}
+
 \newsavebox{\testbox}
 \Umathcode`\-="2 "33 "44444 \relax
 \usepackage{amsmath}
@@ -47,16 +50,13 @@
 \DeclareMathOperator*{\OperatorWithLimits}{01'*-/}
 \DeclareMathOperator{\OperatorWithPunctuation}{a:b*/'-.}
 \usepackage{mathtools}
-\luatexUmathcode`\="5 "66 "77777 \relax
-
-% Needed until next kernel update
-\directlua{tex.enableprimitives("",tex.extraprimitives("luatex"))}
+\Umathcode`\="5 "66 "77777 \relax
 
 \begin{document}
 
 \TIMO
 
-\AssertIntEqual{\luatexUmathcode`\=}{"66A77777}
+\AssertIntEqual{\Umathcode`\=}{"66A77777}
 \makeatletter
 \AssertIntEqual{\std@equal}{"66A77777}
 \makeatother
