@@ -37,7 +37,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{878}
+% \CheckSum{868}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -173,8 +173,8 @@
 %   cannot be controlled.  As a matter of course, the \thispackage package
 %   needs \hologo{LuaLaTeX} to function; it will produce error messages and
 %   refuse to load under other engines and formats.  The package depends on the
-%   \pkg{expl3} bundle, the \pkg{etoolbox} package, the \pkg{luatexbase} bundle
-%   and the \pkg{filehook} package.  The \thispackage package is independent of
+%   \pkg{expl3} bundle, the \pkg{etoolbox} package and the
+%   \pkg{filehook} package. The \thispackage package is independent of
 %   the \pkg{unicode-math} package; the fixes provided here are valid for both
 %   Unicode and legacy math typesetting.
 %
@@ -206,8 +206,8 @@
 %   sobald das Paket geladen wird.  Selbstverständlich funktioniert das
 %   \thispackage-Paket nur unter \hologo{LuaLaTeX}; für andere Engines oder
 %   Formate bricht das Laden mit einer Fehlermeldung ab.  Das Paket hängt von
-%   der \pkg{expl3}-Sammlung, dem \pkg{etoolbox}-Paket, der
-%   \pkg{luatexbase}-Sammlung und dem \pkg{filehook}-Paket ab.  Das
+%   der \pkg{expl3}-Sammlung, dem \pkg{etoolbox}-Paket
+%   und dem \pkg{filehook}-Paket ab.  Das
 %   \thispackage-Paket ist unabhängig vom \pkg{unicode-math}-Paket; die hier
 %   zur Verfügung gestellten Korrekturen sind sowohl für Unicode"~ als auch für
 %   herkömmlichen Mathematiksatz gültig.
@@ -237,9 +237,10 @@
 %
 % \section{Implementation of the \hologo{LaTeX2e} package}
 % 
-% \changes{v1.4a}{2015/08/24}{\pkg{Use \pkg{expl3} versions of \hologo{LuaTeX}
+% \changes{v1.4a}{2015/08/24}{Use \pkg{expl3} versions of \hologo{LuaTeX}
 %   math primitives}
 % \changes{v1.4a}{2015/08/24}{Avoid \cs{RequireLuaModule}}
+% \changes{v1.4a}{2015/09/16}{Load \pkg{luatexbase} only if required}
 %
 % \subsection{Requirements}
 %
@@ -247,11 +248,12 @@
 %<*package>
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
-\RequirePackage{expl3}[2015/06/26]
-\ProvidesExplPackage{lualatex-math}{2015/08/24}{1.4a}%
+\RequirePackage{expl3}[2015/09/07]
+\ProvidesExplPackage{lualatex-math}{2015/09/22}{1.4a}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
-\RequirePackage { luatexbase } [ 2010/05/27 ]
+\cs_if_exist:NF \newluabytecode
+  { \RequirePackage { luatexbase } [ 2010/05/27 ] }
 \RequirePackage { filehook } [ 2011/03/09 ]
 \directlua{require("lualatex-math")}
 %    \end{macrocode}
@@ -329,10 +331,9 @@
 % \subsection{Initialization}
 %
 % Unless we are running under \hologo{LuaTeX}, we issue an error and quit
-% immediately.  Loading the \pkg{luatexbase} module will already have produced
-% an error, but we issue another one for clarity.
+% immediately.
 %    \begin{macrocode}
-\luatex_if_engine:F {
+\sys_if_engine_luatex:F {
   \msg_error:nn { lualatex-math } { luatex-required }
   \endinput
 }

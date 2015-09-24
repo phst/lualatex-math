@@ -1,0 +1,29 @@
+% Copyright 2011, 2012, 2013 Philipp Stephani
+% Copyright 2015 Philipp Stephani and Joseph Wright
+\input{regression-test}
+
+\START
+
+\AUTHOR{Philipp Stephani and Joseph Wright}
+
+\OMIT
+
+\documentclass{minimal}
+\usepackage{unicode-math}[2011/05/05]
+\setmathfont{XITS Math}
+\usepackage{lualatex-math}
+\usepackage{icomma}
+
+\begin{document}
+
+\setbox0=\hbox{$1,234 \; (x, y)$}
+
+\TIMO
+
+\showoutput
+
+\showthe\mathcomma
+
+$1,234 \; (x, y)$
+
+\end{document}

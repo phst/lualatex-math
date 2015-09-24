@@ -1,0 +1,177 @@
+% Copyright 2011, 2012, 2013 Philipp Stephani
+% Copyright 2015 Philipp Stephani and Joseph Wright
+\input{regression-test}
+
+\START
+
+\AUTHOR{Philipp Stephani and Joseph Wright}
+
+\OMIT
+
+\documentclass{minimal}
+
+\usepackage{expl3}
+\ExplSyntaxOn
+\cs_new_protected:Npn \AssertDimEqual #1#2
+  { \dim_compare:nNnTF {#1} = {#2} \TRUE \ERROR }
+\cs_new_protected:Npn \AssertIntEqual #1#2
+  { \int_compare:nNnTF {#1} = {#2} \TRUE \ERROR }
+\cs_new_protected:Npn \AssertMathStyle
+  { \AssertIntEqual \luatex_mathstyle:D }
+\cs_new_protected:Npn \AssertCrampedStyle
+  {
+    \int_if_even:nTF \luatex_mathstyle:D \ERROR \FALSE }
+  }
+\cs_new_protected:Npn \AssertNoncrampedStyle
+  {
+    \int_if_even:nTF \luatex_mathstyle:D \TRUE \ERROR }
+  }
+\ExplSyntaxOff
+
+\usepackage{lualatex-math}
+
+% Needed until next kernel update
+\directlua{tex.enableprimitives("",tex.extraprimitives("luatex"))}
+
+\newsavebox{\testbox}
+\Umathcode`\-="2 "33 "44444 \relax
+\usepackage{amsmath}
+
+\TIMO
+
+\AssertIntEqual{\Umathcode`\-}{"33444444}
+\makeatletter
+\AssertIntEqual{\std@minus}{"33444444}
+\makeatother
+
+\OMIT
+
+\DeclareMathOperator{\Operator}{*-/'a-b}
+\DeclareMathOperator*{\OperatorWithLimits}{01'*-/}
+\DeclareMathOperator{\OperatorWithPunctuation}{a:b*/'-.}
+\usepackage{mathtools}
+\Umathcode`\="5 "66 "77777 \relax
+
+\begin{document}
+
+\TIMO
+
+\AssertIntEqual{\Umathcode`\=}{"66A77777}
+\makeatletter
+\AssertIntEqual{\std@equal}{"66A77777}
+\makeatother
+\sbox{\testbox}{$($} % )
+\makeatletter
+\AssertDimEqual{\ht\Mathstrutbox@}{\ht\testbox}
+\AssertDimEqual{\dp\Mathstrutbox@}{\dp\testbox}
+\makeatother
+\begin{equation*}
+  \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
+  \sum_{
+    \substack{\frac12 \\ \frac34 \\ \frac56}
+  }
+  \sum_{
+    \begin{subarray}{l} \frac12 \\ \frac34 \\ \frac56 \end{subarray}
+  }
+  \frac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dfrac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tfrac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \binom{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  a^{\binom{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dbinom{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tbinom{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{}{}{}{}{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \genfrac{<}{/}{0pt}{0}{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \genfrac{}{}{}{1}{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{|}{]}{4pt}{2}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \genfrac{}{}{}{3}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+\end{equation*}
+\begin{math}
+  \AssertMathStyle{2} \sqrt{\AssertMathStyle{3}}
+  \sum_{
+    \substack{\frac12 \\ \frac34 \\ \frac56}
+  }
+  \sum_{
+    \begin{subarray}{l} \frac12 \\ \frac34 \\ \frac56 \end{subarray}
+  }
+  \frac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  a^{\frac{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dfrac{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tfrac{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \binom{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  a^{\binom{\AssertMathStyle{6}}{\AssertMathStyle{7}}}
+  \dbinom{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \tbinom{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{}{}{}{}{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{<}{/}{0pt}{0}{\AssertMathStyle{2}}{\AssertMathStyle{3}}
+  \genfrac{}{}{}{1}{\AssertMathStyle{4}}{\AssertMathStyle{5}}
+  \genfrac{|}{]}{4pt}{2}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+  \genfrac{}{}{}{3}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
+\end{math}
+\begin{equation*}
+  \AssertMathStyle{0}
+  a^{\AssertMathStyle{4} a}
+  \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+  a^{
+    \AssertMathStyle{4}
+    a^a
+    \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+    a^a
+    \AssertMathStyle{4}
+  }
+  a^{
+    a^{
+      \AssertMathStyle{6}
+      a^a
+      \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+      a^a
+      \AssertMathStyle{6}
+    }
+  }
+  a^{\AssertMathStyle{4} a}
+  \AssertMathStyle{0}
+\end{equation*}
+\begin{math}
+  \AssertMathStyle{2}
+  a^{\AssertMathStyle{4} a}
+  \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+  a^{
+    \AssertMathStyle{4}
+    a^a
+    \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+    a^a
+    \AssertMathStyle{4}
+  }
+  a^{
+    a^{
+      \AssertMathStyle{6}
+      a^a
+      \cramped{\AssertCrampedStyle a^{\AssertCrampedStyle a}}
+      a^a
+      \AssertMathStyle{6}
+    }
+  }
+  a^{\AssertMathStyle{4} a}
+  \AssertMathStyle{2}
+\end{math}
+\begin{math}
+  \smashoperator{\sum_i}
+\end{math}
+
+\setbox0=\vbox{%
+% Check spacing is correct
+% See the definitions in the preamble
+  $\Operator$
+  $\OperatorWithLimits$
+  $\OperatorWithPunctuation$
+  \mathcode`\-=45 \relax
+  $\Operator$
+  $\OperatorWithLimits$
+  $\OperatorWithPunctuation$
+}
+\showbox0
+
+\OMIT
+
+\end{document}
