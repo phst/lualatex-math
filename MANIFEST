@@ -3,7 +3,6 @@ This work consists of the non-derived files
 README
 README.rst
 MANIFEST
-Makefile
 lualatex-math.dtx
 lualatex-math.ins
 lualatex-math.el
@@ -12,12 +11,5 @@ and the derived files
 
 lualatex-math.sty
 lualatex-math.lua
-test-kernel-style.tex
-test-amsmath.tex
-test-unicode.tex
-test-icomma.tex
-test-icomma-unicode.tex
-lualatex-math.drv
-lualatex-math-de.drv
 lualatex-math.pdf
 lualatex-math-de.pdf
