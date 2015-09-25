@@ -2,6 +2,9 @@
 % Copyright 2015 Philipp Stephani and Joseph Wright
 \input{regression-test}
 
+% This test file loads only \pkg{icomma} to test whether our patch works for
+% Computer Modern.
+
 \START
 
 \AUTHOR{Philipp Stephani and Joseph Wright}

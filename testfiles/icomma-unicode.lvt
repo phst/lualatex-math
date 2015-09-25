@@ -2,6 +2,9 @@
 % Copyright 2015 Philipp Stephani and Joseph Wright
 \input{regression-test}
 
+% This test file loads both \pkg{icomma} and \pkg{unicode-math} to test whether
+% they interact well.
+
 \START
 
 \AUTHOR{Philipp Stephani and Joseph Wright}

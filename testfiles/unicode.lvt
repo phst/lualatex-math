@@ -2,6 +2,15 @@
 % Copyright 2015 Philipp Stephani and Joseph Wright
 \input{regression-test}
 
+% This test file loads both \pkg{amsmath} and \pkg{unicode-math}.  The latter
+% package contains fixes that somewhat overlap with ours.  We have to take care
+% in all packages that no attempt is made to patch a single macro twice.
+% Therefore we treat warnings (that occur when trying to patch a macro with an
+% unknown meaning) as errors here.  However, the auxiliary package
+% \pkg{fontspec-patches} uses \cmd{\RenewDocumentCommand} from the \pkg{xparse}
+% package, which generates a warning that we don't want to turn into an error.
+% Therefore we treat the offending message \msg{redefine-command} specially.
+
 \START
 
 \AUTHOR{Philipp Stephani and Joseph Wright}
@@ -12,6 +21,8 @@
 
 \usepackage{expl3}
 \ExplSyntaxOn
+\msg_redirect_class:nn { warning } { error }
+\msg_redirect_name:nnn { LaTeX } { xparse / redefine-command } { info }
 \cs_new_protected:Npn \AssertIntEqual #1#2
   { \int_compare:nNnTF {#1} = {#2} \TRUE \ERROR }
 \cs_new_protected:Npn \AssertMathStyle

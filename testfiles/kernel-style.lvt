@@ -2,6 +2,9 @@
 % Copyright 2015 Philipp Stephani and Joseph Wright
 \input{regression-test}
 
+% Here we only check whether different fractions and other style-changing
+% commands result in the correct mathematical style.
+
 \START
 
 \AUTHOR{Philipp Stephani and Joseph Wright}

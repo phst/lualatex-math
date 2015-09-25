@@ -2,6 +2,9 @@
 % Copyright 2015 Philipp Stephani and Joseph Wright
 \input{regression-test}
 
+% Since \pkg{mathtools} loads \pkg{amsmath} and \pkg{amsopn} anyway, we test
+% all three in one file.
+
 \START
 
 \AUTHOR{Philipp Stephani and Joseph Wright}
@@ -33,7 +36,10 @@
 % Needed until next kernel update
 \directlua{tex.enableprimitives("",tex.extraprimitives("luatex"))}
 
+% First a scratch box register.
 \newsavebox{\testbox}
+% We set the mathematical code for the minus sign to some arbitrary Unicode
+% value to test whether the load-time patch works.
 \Umathcode`\-="2 "33 "44444 \relax
 \usepackage{amsmath}
 
@@ -46,10 +52,12 @@
 
 \OMIT
 
+% Check that we can still declare operators.
 \DeclareMathOperator{\Operator}{*-/'a-b}
 \DeclareMathOperator*{\OperatorWithLimits}{01'*-/}
 \DeclareMathOperator{\OperatorWithPunctuation}{a:b*/'-.}
 \usepackage{mathtools}
+% The same for the document begin hook.
 \Umathcode`\="5 "66 "77777 \relax
 
 \begin{document}
@@ -60,11 +68,17 @@
 \makeatletter
 \AssertIntEqual{\std@equal}{"66A77777}
 \makeatother
+% Here we test whether the strut box has the correct height and depth.
 \sbox{\testbox}{$($} % )
 \makeatletter
 \AssertDimEqual{\ht\Mathstrutbox@}{\ht\testbox}
 \AssertDimEqual{\dp\Mathstrutbox@}{\dp\testbox}
 \makeatother
+% Here we test for the various \pkg{amsmath} features that have to be patched:
+% sub-arrays and various kind of fraction-like objects.  The \cmd{\substack}
+% command and \env{subarray} environment aren’t really tested since it is hard
+% to check whether the outcome looks right in an automated way.  All tests are
+% done in both inline and display mode.
 \begin{equation*}
   \AssertMathStyle{0} \sqrt{\AssertMathStyle{1}}
   \sum_{
@@ -109,6 +123,9 @@
   \genfrac{|}{]}{4pt}{2}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
   \genfrac{}{}{}{3}{\AssertMathStyle{6}}{\AssertMathStyle{7}}
 \end{math}
+% Since \pkg{mathtools}’ \cmd{\cramped} command uses \cmd{\mathchoice}, we
+% cannot test for a single mathematical style since all of them are executed;
+% instead, we just verify that all styles encountered are cramped.
 \begin{equation*}
   \AssertMathStyle{0}
   a^{\AssertMathStyle{4} a}
@@ -155,10 +172,16 @@
   a^{\AssertMathStyle{4} a}
   \AssertMathStyle{2}
 \end{math}
+% \changes{v1.4}{2014/08/18}{Add test for \cs{smashoperator}}
+% \pkg{mathtools}’ |\smashoperator| command requires |\MT_cramped_internal:Nn|
+% to work in text as well as math mode (see
+% \href{https://github.com/phst/lualatex-math/issues/11}{issue~11}).
 \begin{math}
   \smashoperator{\sum_i}
 \end{math}
 
+% The \pkg{amsopn} package uses |\mathcode| when executing a user-defined
+% operator command.  Test that this was patched out.
 \setbox0=\vbox{%
 % Check spacing is correct
 % See the definitions in the preamble
