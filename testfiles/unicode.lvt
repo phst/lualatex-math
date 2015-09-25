@@ -36,6 +36,8 @@
 
 \begin{document}
 
+% Typeset a dummy equation so that LuaLaTeX font loading messages don’t clutter
+% the log.
 \begin{equation*}
   \sqrt{} a
 \end{equation*}
