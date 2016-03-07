@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{362}
+% \CheckSum{316}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -149,7 +149,7 @@
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2015/09/07]
-\ProvidesExplPackage{lualatex-math}{2015/09/22}{1.4a}%
+\ProvidesExplPackage{lualatex-math}{2015/09/22}{1.5}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
@@ -379,26 +379,7 @@
 % \end{macro}
 % \end{macro}
 %
-% \begin{macro}{\@@_char_dim:NN}
-%   The macro \cmd{\@@_char_dim:NN}\meta{primitive}\meta{token} expands to a
-%   \meta{dimen} whose value is the metric of the mathematical character
-%   corresponding to the character \texttt{\textasciigrave}\meta{token}
-%   specified by \meta{primitive}, which must be one of \cmd{\fontcharwd},
-%   \cmd{\fontcharht} or \cmd{\fontchardp}, in the currently selected text
-%   style font.
-%   \changes{v0.3c}{2012/08/23}{\pkg{l3kernel} renamed \cs{lua_now:x} to
-%   \cs{lua_now_x:n}}
-%   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
-%     \cs{lua_now_x:n}}
-%    \begin{macrocode}
-\cs_new_nopar:Npn \@@_char_dim:NN #1 #2 {
-  #1 \textfont
-  \lua_now_x:n {
-    lualatex.math.print_fam_slot( \int_eval:n { `#2 } )
-  }
-}
-%    \end{macrocode}
-% \end{macro}
+% \changes{v1.5}{2016/03/07}{Removed unused helper macro \cs{@@_char_dim:NN}}
 %
 % \begin{macro}{\l_@@_minus_mathchar}
 % \begin{macro}{\l_@@_equal_mathchar}
@@ -462,35 +443,8 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\resetMathstrut@}
-%   \pkg{amsmath} uses the box \cmd{\Mathstrutbox@} for struts in mathematical
-%   mode.  This box is defined to have the height and depth of the opening
-%   parenthesis taken from the current text font.  The command
-%   \cmd{\resetMathstrut@} is executed whenever the mathematical fonts are
-%   changed and has to restore the correct dimensions.  The original definition
-%   uses a temporary mathematical character shorthand definition whose meaning
-%   is queried to extract the family and slot.  We can do this in Lua;
-%   furthermore we can avoid a temporary box because \hologo{eTeX} allows us to
-%   query glyph metrics directly.
-%    \begin{macrocode}
-  \@@_patch:NNnnn \resetMathstrut@ \cs_set_nopar:Npn { } {
-    \setbox \z@ \hbox {
-      \mathchardef \@tempa \mathcode `\( \relax % \)
-      \def \@tempb ##1 "##2 ##3 { \the \textfont "##3 \char" }
-      \expandafter \@tempb \meaning \@tempa \relax
-    }
-    \ht \Mathstrutbox@ \ht \z@
-    \dp \Mathstrutbox@ \dp \z@
-  } {
-    \box_set_ht:Nn \Mathstrutbox@ {
-      \@@_char_dim:NN \fontcharht \( % \)
-    }
-    \box_set_dp:Nn \Mathstrutbox@ {
-      \@@_char_dim:NN \fontchardp \)
-    }
-  }
-%    \end{macrocode}
-% \end{macro}
+% \changes{v1.5}{2016/03/07}{Removed patch for \cs{Mathstrutbox@};
+% \pkg{amsmath} now has a definition usable in \Hologo{LuaLaTeX}}
 %
 % \begin{environment}{subarray}
 %   The \env{subarray} environment uses legacy font dimensions.  We simply
@@ -752,21 +706,7 @@ local cctb = luatexbase.catcodetables or
   {string = luatexbase.registernumber("catcodetable@string")}
 %    \end{macrocode}
 %
-% \begin{function}{print_fam_slot}
-%   The function \func{print_fam_slot} takes one argument which must be a
-%   number.  It interprets the argument as a Unicode code point whose
-%   mathematical code is printed in the form
-%   \meta{family}\texttt{\textvisiblespace}\meta{slot}, suitable for the
-%   right-hand side of \eg \verb|\fontcharht\textfont|.
-%    \begin{macrocode}
-function lualatex.math.print_fam_slot(char)
-  local code = tex.getmathcode(char)
-  local class, family, slot = unpack(code)
-  local result = string.format("%i %i ", family, slot)
-  tex.sprint(cctb.string, result)
-end
-%    \end{macrocode}
-% \end{function}
+% \changes{v1.5}{2016/03/07}{Removed unused Lua function \func{print_fam_slot}}
 %
 % \begin{function}{print_class_fam_slot}
 %   The function \func{print_class_fam_slot} takes one argument which must be a
