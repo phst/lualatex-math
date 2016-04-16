@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{316}
+% \CheckSum{267}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -115,12 +115,11 @@
 % Unicode and legacy math typesetting.
 %
 % Currently patches for the \hologo{LaTeX2e} kernel and the \pkg{amsmath},
-% \pkg{amsopn}, \pkg{mathtools} and \pkg{icomma} packages are provided.  It
-% is not relevant whether you load these packages before or after
-% \thispackage.  They should work as expected (and ideally you shouldn’t
-% notice anything), but if you load other packages that by themselves
-% overwrite commands patched by this package, bad things may happen, as it is
-% usual with \hologo{LaTeX}.
+% \pkg{mathtools} and \pkg{icomma} packages are provided.  It is not relevant
+% whether you load these packages before or after \thispackage.  They should
+% work as expected (and ideally you shouldn’t notice anything), but if you load
+% other packages that by themselves overwrite commands patched by this package,
+% bad things may happen, as it is usual with \hologo{LaTeX}.
 %
 % One user-visible change is that the new
 % \DescribeMacros{\mathstyle}\cmd{\mathstyle} primitive
@@ -149,7 +148,7 @@
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2015/09/07]
-\ProvidesExplPackage{lualatex-math}{2015/09/22}{1.5}%
+\ProvidesExplPackage{lualatex-math}{2016/04/16}{1.6}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
@@ -540,46 +539,9 @@
 % \end{macro}
 %
 %
-% \subsection{\pkg{amsopn}}
-%
 % \changes{v1.1}{2012/10/13}{Add fix and unit test for \pkg{amsopn}}
-% The \pkg{amsopn} package can be used standalone, but is also loaded by
-% \pkg{amsmath}.  It provides the \cmd{\DeclareMathOperator} command which
-% breaks when the minus character is a Unicode math character; this issue was
-% brought to my attention by \Burnol.
-%
-% \begin{macro}{\newmcodes@}
-%   We only need to patch one usage of |\mathcode| in the internal macro
-%   |\newmcodes@|, which is called by all user-defined operators.
-%    \begin{macrocode}
-\group_begin:
-\char_set_catcode_other:N \"
-\AtEndOfPackageFile * { amsopn } {
-  \@@_patch:NNnnn \newmcodes@ \cs_gset_nopar:Npn { } {
-    \mathcode `\' 39
-    \mathcode `\* 42
-    \mathcode `\. "613A
-    \ifnum \mathcode `\- = 45 ~ \else
-      \mathchardef \std@minus \mathcode `\- \relax
-    \fi
-    \mathcode `\- 45
-    \mathcode `\/ 47
-    \mathcode `\: "603A \relax
-  } {
-    \char_set_mathcode:nn { `\' } { 39 }
-    \char_set_mathcode:nn { `\* } { 42 }
-    \char_set_mathcode:nn { `\. } { "613A }
-    \int_compare:nNnF { \utex_mathcodenum:D `\- } = { 45 } {
-      \@@_set_mathchar:NN \std@minus \-
-    }
-    \char_set_mathcode:nn { `\- } { 45 }
-    \char_set_mathcode:nn { `\/ } { 47 }
-    \char_set_mathcode:nn { `\: } { "603A }
-  }
-}
-\group_end:
-%    \end{macrocode}
-% \end{macro}
+% \changes{v1.6}{2016/04/16}{Removed patch for \cs{newmcodes@};
+% \pkg{amsmath} now has a definition usable in \Hologo{LuaLaTeX}}
 %
 %
 % \subsection{\pkg{mathtools}}
