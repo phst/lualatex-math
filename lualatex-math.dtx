@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright 2011–2016 by Philipp Stephani
+% Copyright 2011–2017 by Philipp Stephani
 %
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{267}
+% \CheckSum{280}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -148,7 +148,7 @@
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2009/09/24]
 \RequirePackage{expl3}[2015/09/07]
-\ProvidesExplPackage{lualatex-math}{2016/04/16}{1.6}%
+\ProvidesExplPackage{lualatex-math}{2017/06/15}{1.7}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
@@ -516,22 +516,39 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\@genfrac}
-%   Generalized fractions are typeset by the internal \cmd{\@genfrac} command.
+% \begin{macro}{\genfrac}
+%   Generalized fractions are typeset by the \cmd{\genfrac} command.
+%   Since \cmd{\genfrac} is declared by \cmd{\DeclareRobustCommand},
+%   we have to patch the macro \cmd{\genfrac\textvisiblespace}.
+%   \changes{v1.7}{2017/06/15}{Adapt patch to changes in \pkg{amsmath}}
 %    \begin{macrocode}
-  \@@_patch:NNnnn \@genfrac \cs_set_nopar:Npn {
-    #1 #2 #3 #4 #5
+  \@@_patch:cNnnn { genfrac~ } \cs_set:Npn {
+    #1 #2 #3 #4 #5 #6
   } {
     {
-      #1 { \begingroup #4 \endgroup #2 #3 \relax #5 }
+      \@mathstyle { #4 }
+      \genfrac@choice o { #1 }
+      {
+        \begingroup #5 \endgroup
+%<@@=>
+        \ifx @ #3 @ \@@over \else \@@above \fi #3 \relax
+        #6
+      }
+      \genfrac@choice c { #2 }
     }
   } {
     {
-      #1 {
+      \@mathstyle { #4 }
+      \genfrac@choice o { #1 }
+      {
         \utex_stack:D {
-          \group_begin: #4 \group_end: #2 #3 \scan_stop: #5
+          \group_begin: #5 \group_end:
+          \tl_if_empty:nTF { #3 } { \@@over } { \@@above #3 \scan_stop: }
+%<@@=lltxmath>
+          #6
         }
       }
+      \genfrac@choice c { #2 }
     }
   }
 }
