@@ -12,6 +12,3 @@ stdengine    = "luatex"
 tdsroot      = "lualatex"
 textfiles    = {"MANIFEST", "README"}
 typesetexe   = "lualatex"
-
-kpse.set_program_name("kpsewhich")
-dofile(kpse.lookup("l3build.lua"))
