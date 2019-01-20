@@ -1,0 +1,25 @@
+% Copyright 2019 Will Robertson
+
+\input{regression-test}
+
+\documentclass{minimal}
+
+\usepackage[enable-debug]{expl3}
+\ExplSyntaxOn
+\debug_on:n {all}
+\ExplSyntaxOff
+
+\usepackage{}
+\usepackage{lualatex-math}
+
+\begin{document}
+\START
+
+\OMIT
+\setbox0=\hbox{$1,234 \; (x, y)$}
+\TIMO
+
+\typeout{No further output expected.}
+\OMIT
+
+\end{document}
