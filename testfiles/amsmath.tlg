@@ -1,6 +1,5 @@
 This is a generated file for the l3build validation system.
 Don't change this file in any respect.
-Author: Philipp Stephani and Joseph Wright
 TRUE
 TRUE
 TRUE
@@ -127,10 +126,10 @@ FALSE
 TRUE
 TRUE
 TRUE
-> \box0=
+> \box...=
 \vbox(7.5+2.5)x469.75499, direction TLT
-.\hbox(7.5+2.5)x469.75499, glue set 253.08801fil, direction TLT
-..\whatsit
+.\hbox(7.5+2.5)x469.75499, glue set 253.10464fil, direction TLT
+..\localpar
 ...\localinterlinepenalty=0
 ...\localbrokenpenalty=0
 ...\localleftbox=null
@@ -138,7 +137,7 @@ TRUE
 ..\hbox(0.0+0.0)x20.0, direction TLT
 ..\mathon
 ..\hbox(7.5+2.5)x30.00006, direction TLT
-...\kern 0.0
+...\kern0.0
 ...\OT1/cmr/m/n/10 *
 ...\OT1/cmr/m/n/10 -
 ...\OT1/cmr/m/n/10 /
@@ -147,10 +146,10 @@ TRUE
 ...\OT1/cmr/m/n/10 -
 ...\OT1/cmr/m/n/10 b
 ..\mathoff
-..\glue 3.33333 plus 1.66666 minus 1.11111
+..\glue(\spaceskip) 3.33 plus 1.665 minus 1.11
 ..\mathon
 ..\hbox(7.5+2.5)x26.11118, direction TLT
-...\kern 0.0
+...\kern0.0
 ...\OT1/cmr/m/n/10 0
 ...\OT1/cmr/m/n/10 1
 ...\OT1/cmr/m/n/10 '
@@ -158,10 +157,10 @@ TRUE
 ...\OT1/cmr/m/n/10 -
 ...\OT1/cmr/m/n/10 /
 ..\mathoff
-..\glue 3.33333 plus 1.66666 minus 1.11111
+..\glue(\spaceskip) 3.33 plus 1.665 minus 1.11
 ..\mathon
 ..\hbox(7.5+2.5)x33.88893, direction TLT
-...\kern 0.0
+...\kern0.0
 ...\OT1/cmr/m/n/10 a
 ...\OT1/cmr/m/n/10 :
 ...\glue(\thinmuskip) 1.66663
@@ -172,10 +171,10 @@ TRUE
 ...\OT1/cmr/m/n/10 -
 ...\OML/cmm/m/it/10 :
 ..\mathoff
-..\glue 3.33333 plus 1.66666 minus 1.11111
+..\glue(\spaceskip) 3.33 plus 1.665 minus 1.11
 ..\mathon
 ..\hbox(7.5+2.5)x30.00006, direction TLT
-...\kern 0.0
+...\kern0.0
 ...\OT1/cmr/m/n/10 *
 ...\OT1/cmr/m/n/10 -
 ...\OT1/cmr/m/n/10 /
@@ -184,10 +183,10 @@ TRUE
 ...\OT1/cmr/m/n/10 -
 ...\OT1/cmr/m/n/10 b
 ..\mathoff
-..\glue 3.33333 plus 1.66666 minus 1.11111
+..\glue(\spaceskip) 3.33 plus 1.665 minus 1.11
 ..\mathon
 ..\hbox(7.5+2.5)x26.11118, direction TLT
-...\kern 0.0
+...\kern0.0
 ...\OT1/cmr/m/n/10 0
 ...\OT1/cmr/m/n/10 1
 ...\OT1/cmr/m/n/10 '
@@ -195,10 +194,10 @@ TRUE
 ...\OT1/cmr/m/n/10 -
 ...\OT1/cmr/m/n/10 /
 ..\mathoff
-..\glue 3.33333 plus 1.66666 minus 1.11111
+..\glue(\spaceskip) 3.33 plus 1.665 minus 1.11
 ..\mathon
 ..\hbox(7.5+2.5)x33.88893, direction TLT
-...\kern 0.0
+...\kern0.0
 ...\OT1/cmr/m/n/10 a
 ...\OT1/cmr/m/n/10 :
 ...\glue(\thinmuskip) 1.66663
