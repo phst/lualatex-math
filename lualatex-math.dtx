@@ -300,6 +300,8 @@
 %   \changes{v1.3a}{2014/06/18}{\pkg{l3kernel} has (currently) dropped
 %     \cs{lua_now_x:n}}
 %   \changes{v1.4a}{2015/08/24}{\cs{lua_now_x:n} is back}
+%   \changes{v1.8}{2019/01/21}{\cs{lua_now_x:n} is now called \cs{lua_now:e}}
+%   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_set_mathchar:NN #1 #2 {
   \Umathchardef #1
@@ -341,6 +343,7 @@
     } {
 %    \end{macrocode}
 % To do: do we need the additional set of braces around \cmd{\Ustack}?
+%   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
       {
         \Ustack { \group_begin: #1 \group_end: \over #2 }
@@ -417,6 +420,7 @@
 % \end{macro}
 % \end{macro}
 % Finally, we restore the original mathematical codes of the two signs.
+% \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
     \Umathcodenum `\- \l_@@_minus_mathchar
     \Umathcodenum `\= \l_@@_equal_mathchar
@@ -453,6 +457,7 @@
 %   for the default vertical baseline distance (\cmd{\baselineskip}) and the
 %   minimum vertical gap for stack for the minimum baseline distance
 %   (\cmd{\lineskip}).
+%   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
   \@@_patch:NNnnn \subarray \cs_set:Npn { #1 } {
     \vcenter
@@ -501,6 +506,7 @@
 % \begin{macro}{\frac}
 %   Since \cmd{\frac} is declared by \cmd{\DeclareRobustCommand}, we must patch
 %   the macro \cmd{\frac\textvisiblespace}.
+%   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
   \@@_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
     {
@@ -521,6 +527,7 @@
 %   Since \cmd{\genfrac} is declared by \cmd{\DeclareRobustCommand},
 %   we have to patch the macro \cmd{\genfrac\textvisiblespace}.
 %   \changes{v1.7}{2017/06/15}{Adapt patch to changes in \pkg{amsmath}}
+%   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
   \@@_patch:cNnnn { genfrac~ } \cs_set:Npn {
     #1 #2 #3 #4 #5 #6
