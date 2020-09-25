@@ -1,6 +1,5 @@
-#!/usr/bin/env texlua
-
--- Build script for lualatex-math
+-- Build script for lualatex-math.
+-- Use the l3build tool to build and test this package.
 
 module = "lualatex-math"
 
