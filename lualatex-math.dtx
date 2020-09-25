@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright 2011–2019 by Philipp Stephani, Joseph Wright, and Will Robertson
+% Copyright 2011–2020 by Philipp Stephani, Joseph Wright, and Will Robertson
 %
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -140,15 +140,16 @@
 %   math primitives}
 % \changes{v1.4a}{2015/08/24}{Avoid \cs{RequireLuaModule}}
 % \changes{v1.4a}{2015/09/16}{Load \pkg{luatexbase} only if required}
+% \changes{v1.9}{2020/09/25}{Require 2020 version of \hologo{LaTeX2e}}
 %
 % \subsection{Requirements}
 %
 %    \begin{macrocode}
 %<*package>
 %<@@=lltxmath>
-\NeedsTeXFormat{LaTeX2e}[2009/09/24]
+\NeedsTeXFormat{LaTeX2e}[2020/02/02]
 \RequirePackage{expl3}[2018/06/18]
-\ProvidesExplPackage{lualatex-math}{2019/01/21}{1.8}%
+\ProvidesExplPackage{lualatex-math}{2020/09/25}{1.9}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
@@ -332,11 +333,14 @@
 %   This is obviously not the case, but we ignore other packages (\eg,
 %   \pkg{nath}) for the moment.  We only patch the \hologo{LaTeX2e} kernel
 %   definition if the \pkg{amsmath} package is not loaded; the corresponding
-%   patch for \pkg{amsmath} follows below.
+%   patch for \pkg{amsmath} follows below.  Since \cmd{\frac} is declared by
+%   \cmd{\DeclareRobustCommand}, we must patch the macro
+%   \cmd{\frac\textvisiblespace}.
+%   \changes{v1.9}{2020/09/25}{Adapt to changes in \hologo{LaTeX2e} kernel}
 %    \begin{macrocode}
 \AtEndPreamble {
   \@ifpackageloaded { amsmath } { } {
-    \@@_patch:NNnnn \frac \cs_set_nopar:Npn { #1 #2 } {
+    \@@_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
       {
         \begingroup #1 \endgroup \over #2
       }

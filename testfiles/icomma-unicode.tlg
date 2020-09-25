@@ -13,7 +13,7 @@ Completed box being shipped out [1]
 ..\glue(\lineskip) 0.0
 ..\vbox(578.15999+0.0)x469.75499, glue set 568.15997fil, direction TLT
 ...\glue(\topskip) 3.24
-...\hbox(6.76+1.83)x469.75499, glue set 403.19064fil, direction TLT
+...\hbox(6.76+1.83)x469.75499, glue set 403.19101fil, direction TLT
 ....\localpar
 .....\localinterlinepenalty=0
 .....\localbrokenpenalty=0
@@ -26,11 +26,11 @@ Completed box being shipped out [1]
 ....\TU/XITSMath(1)/m/n/10 2
 ....\TU/XITSMath(1)/m/n/10 3
 ....\TU/XITSMath(1)/m/n/10 4
-....\glue 2.77771 plus 2.77771
+....\glue 2.77748 plus 2.77748
 ....\TU/XITSMath(1)/m/n/10 (
 ....\TU/XITSMath(1)/m/n/10 𝑥
 ....\TU/XITSMath(1)/m/n/10 ,
-....\glue(\thinmuskip) 1.66663
+....\glue(\thinmuskip) 1.66649
 ....\TU/XITSMath(1)/m/n/10 𝑦
 ....\TU/XITSMath(1)/m/n/10 )
 ....\mathoff
