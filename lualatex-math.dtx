@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{282}
+% \CheckSum{300}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -141,6 +141,7 @@
 % \changes{v1.4a}{2015/08/24}{Avoid \cs{RequireLuaModule}}
 % \changes{v1.4a}{2015/09/16}{Load \pkg{luatexbase} only if required}
 % \changes{v1.9}{2020/09/25}{Require 2020 version of \hologo{LaTeX2e}}
+% \changes{v1.9}{2020/09/25}{Use builtin \hologo{LaTeX2e} hooks if available}
 %
 % \subsection{Requirements}
 %
@@ -154,7 +155,6 @@
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
   { \RequirePackage { luatexbase } [ 2010/05/27 ] }
-\RequirePackage { filehook } [ 2011/03/09 ]
 \directlua{require("lualatex-math")}
 %    \end{macrocode}
 %
@@ -314,6 +314,46 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\@@_before_package:nn}
+% \begin{macro}{\@@_after_package:nn}
+%   The macro \cmd{\@@_before_package:nn}\marg{package}\marg{code} executes the
+%   \meta{code} before the \meta{package} is loaded.  Accordingly,
+%   \cmd{\@@_after_package:nn}\marg{package}\marg{code} executes the
+%   \meta{code} after the \meta{package} is loaded.  If the \meta{package} is
+%   already loaded, nothing happens.  We prefer using native \hologo{LaTeX2e}
+%   hooks if possible.
+%    \begin{macrocode}
+\@ifl@t@r \fmtversion { 2020/10/01 } {
+  \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
+    \AddToHook { package/before/#1 } { #2 }
+  }
+  \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
+    \AddToHook { package/after/#1 } { #2 }
+  }
+} {
+  \RequirePackage { filehook } [ 2011/03/09 ]
+  \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
+    \AtBeginOfPackageFile { #1 } { #2 }
+  }
+  \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
+    \AtEndOfPackageFile { #1 } { #2 }
+  }
+}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@@_after_package_or_now:nn}
+%   The macro \cmd{\@@_after_package_or_now:nn}\meta{package}\meta{code}
+%   executes the \meta{code} after the \meta{package} is loaded.  If the
+%   \meta{package} is already loaded, the \meta{code} is executed immediately.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \@@_after_package_or_now:nn #1 #2 {
+  \@ifpackageloaded { #1 } { #2 } { \@@_after_package:nn { #1 } { #2 } }
+}
+%    \end{macrocode}
+% \end{macro}
+%
 %
 % \subsection{\Hologo{LaTeX2e} kernel}
 %
@@ -403,7 +443,7 @@
 %    \begin{macrocode}
 \tl_new:N \l_@@_minus_mathchar
 \tl_new:N \l_@@_equal_mathchar
-\AtBeginOfPackageFile { amsmath } {
+\@@_before_package:nn { amsmath } {
   \@ifpackagelater { amsmath } { 2020/08/24 } { } {
     \@@_set_mathchar:NN \l_@@_minus_mathchar \-
     \@@_set_mathchar:NN \l_@@_equal_mathchar \=
@@ -414,7 +454,7 @@
 %    \begin{macrocode}
     \char_set_mathcode:nn { `\- } { \c_@@_std_minus_mathcode_int }
     \char_set_mathcode:nn { `\= } { \c_@@_std_equal_mathcode_int }
-    \AtEndOfPackageFile { amsmath } {
+    \@@_after_package:nn { amsmath } {
 %    \end{macrocode}
 % \begin{macro}{\std@minus}
 % \begin{macro}{\std@equals}
@@ -445,7 +485,7 @@
 %   code.
 %   \changes{v1.9}{2020/09/25}{Don’t patch newer versions of \pkg{amsmath}}
 %    \begin{macrocode}
-\AtEndOfPackageFile * { amsmath } {
+\@@_after_package_or_now:nn { amsmath } {
   \@ifpackagelater { amsmath } { 2020/08/24 } { } {
     \tl_replace_once:Nnn \@begindocumenthook {
       \mathchardef \std@minus \mathcode `\- \relax
@@ -602,7 +642,7 @@
 %   possible as well, but we avoid this way since we want to patch only a
 %   single command.
 %    \begin{macrocode}
-\AtEndOfPackageFile * { mathtools } {
+\@@_after_package_or_now:nn { mathtools } {
   \@@_patch:NNnnn \MT_cramped_internal:Nn
     \cs_set_nopar:Npn { #1 #2 } {
     \sbox \z@ {
@@ -665,7 +705,7 @@
 %   the beginning of the document, therefore we again patch
 %   \cmd{\@begindocumenthook}.
 %    \begin{macrocode}
-\AtEndOfPackageFile * { icomma } {
+\@@_after_package_or_now:nn { icomma } {
   \tl_replace_once:Nnn \@begindocumenthook {
     \mathchardef \mathcomma \mathcode `\,
   } {
