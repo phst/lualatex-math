@@ -31,7 +31,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{279}
+% \CheckSum{282}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -371,6 +371,8 @@
 % \item The fraction commands \cmd{\frac} and \cmd{\genfrac} don’t use the
 %   \cmd{\Ustack} primitive.
 % \end{itemize}
+% These problems have been fixed in version~2.17i of \pkg{amsmath}, so we don’t
+% attempt to patch it if that version is loaded.
 %
 % \begin{macro}{\c_@@_std_minus_mathcode_int}
 % \begin{macro}{\c_@@_std_equal_mathcode_int}
@@ -397,20 +399,22 @@
 %   can do, therefore we use the non-starred version of
 %   \cmd{\AtBeginOfPackageFile}.
 %   \changes{v1.2}{2013/01/13}{Replace removed macro \cs{chk_if_free_cs:N}}
+%   \changes{v1.9}{2020/09/25}{Don’t patch newer versions of \pkg{amsmath}}
 %    \begin{macrocode}
 \tl_new:N \l_@@_minus_mathchar
 \tl_new:N \l_@@_equal_mathchar
 \AtBeginOfPackageFile { amsmath } {
-  \@@_set_mathchar:NN \l_@@_minus_mathchar \-
-  \@@_set_mathchar:NN \l_@@_equal_mathchar \=
+  \@ifpackagelater { amsmath } { 2020/08/24 } { } {
+    \@@_set_mathchar:NN \l_@@_minus_mathchar \-
+    \@@_set_mathchar:NN \l_@@_equal_mathchar \=
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
 % Now we temporarily reset the mathematical codes.
 %    \begin{macrocode}
-  \char_set_mathcode:nn { `\- } { \c_@@_std_minus_mathcode_int }
-  \char_set_mathcode:nn { `\= } { \c_@@_std_equal_mathcode_int }
-  \AtEndOfPackageFile { amsmath } {
+    \char_set_mathcode:nn { `\- } { \c_@@_std_minus_mathcode_int }
+    \char_set_mathcode:nn { `\= } { \c_@@_std_equal_mathcode_int }
+    \AtEndOfPackageFile { amsmath } {
 %    \end{macrocode}
 % \begin{macro}{\std@minus}
 % \begin{macro}{\std@equals}
@@ -418,16 +422,17 @@
 %   and \cmd{\std@equal} as mathematical character shorthands while loading,
 %   but uses our restored mathematical codes, which must be fixed.
 %    \begin{macrocode}
-    \cs_set_eq:NN \std@minus \l_@@_minus_mathchar
-    \cs_set_eq:NN \std@equal \l_@@_equal_mathchar
+      \cs_set_eq:NN \std@minus \l_@@_minus_mathchar
+      \cs_set_eq:NN \std@equal \l_@@_equal_mathchar
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
 % Finally, we restore the original mathematical codes of the two signs.
 % \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
-    \Umathcodenum `\- \l_@@_minus_mathchar
-    \Umathcodenum `\= \l_@@_equal_mathchar
+      \Umathcodenum `\- \l_@@_minus_mathchar
+      \Umathcodenum `\= \l_@@_equal_mathchar
+    }
   }
 }
 %    \end{macrocode}
@@ -438,14 +443,17 @@
 %   \cmd{\std@equal} at the beginning of the document, so we also have to patch
 %   the internal kernel macro \cmd{\@begindocumenthook} which contains the hook
 %   code.
+%   \changes{v1.9}{2020/09/25}{Don’t patch newer versions of \pkg{amsmath}}
 %    \begin{macrocode}
 \AtEndOfPackageFile * { amsmath } {
-  \tl_replace_once:Nnn \@begindocumenthook {
-    \mathchardef \std@minus \mathcode `\- \relax
-    \mathchardef \std@equal \mathcode `\= \relax
-  } {
-    \@@_set_mathchar:NN \std@minus \-
-    \@@_set_mathchar:NN \std@equal \=
+  \@ifpackagelater { amsmath } { 2020/08/24 } { } {
+    \tl_replace_once:Nnn \@begindocumenthook {
+      \mathchardef \std@minus \mathcode `\- \relax
+      \mathchardef \std@equal \mathcode `\= \relax
+    } {
+      \@@_set_mathchar:NN \std@minus \-
+      \@@_set_mathchar:NN \std@equal \=
+    }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -462,48 +470,50 @@
 %   minimum vertical gap for stack for the minimum baseline distance
 %   (\cmd{\lineskip}).
 %   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
+%   \changes{v1.9}{2020/09/25}{Don’t patch newer versions of \pkg{amsmath}}
 %    \begin{macrocode}
-  \@@_patch:NNnnn \subarray \cs_set:Npn { #1 } {
-    \vcenter
-    \bgroup
-    \Let@
-    \restore@math@cr
-    \default@tag
-    \baselineskip \fontdimen 10~ \scriptfont \tw@
-    \advance \baselineskip \fontdimen 12~ \scriptfont \tw@
+  \@ifpackagelater { amsmath } { 2020/09/23 } { } {
+    \@@_patch:NNnnn \subarray \cs_set:Npn { #1 } {
+      \vcenter
+      \bgroup
+      \Let@
+      \restore@math@cr
+      \default@tag
+      \baselineskip \fontdimen 10~ \scriptfont \tw@
+      \advance \baselineskip \fontdimen 12~ \scriptfont \tw@
 %<@@=>
-    \lineskip \thr@@ \fontdimen 8~ \scriptfont \thr@@
+      \lineskip \thr@@ \fontdimen 8~ \scriptfont \thr@@
 %<@@=lltxmath>
-    \lineskiplimit \lineskip
-    \ialign
-    \bgroup
-    \ifx c #1 \hfil \fi
-    $ \m@th \scriptstyle ## $
-    \hfil
-    \crcr
-  } {
-    \vcenter
-    \c_group_begin_token
-    \Let@
-    \restore@math@cr
-    \default@tag
-    \skip_set:Nn \baselineskip {
-      \Umathstacknumup \scriptstyle
-      + \Umathstackdenomdown \scriptstyle
+      \lineskiplimit \lineskip
+      \ialign
+      \bgroup
+      \ifx c #1 \hfil \fi
+      $ \m@th \scriptstyle ## $
+      \hfil
+      \crcr
+    } {
+      \vcenter
+      \c_group_begin_token
+      \Let@
+      \restore@math@cr
+      \default@tag
+      \skip_set:Nn \baselineskip {
+        \Umathstacknumup \scriptstyle
+        + \Umathstackdenomdown \scriptstyle
+      }
+      \lineskip \Umathstackvgap \scriptstyle
+      \lineskiplimit \lineskip
+      \ialign
+      \c_group_begin_token
+      \token_if_eq_meaning:NNT c #1 { \hfil }
+      \Ustartmath
+      \m@th
+      \scriptstyle
+      \tex_alignmark:D \tex_alignmark:D
+      \Ustopmath
+      \hfil
+      \crcr
     }
-    \lineskip \Umathstackvgap \scriptstyle
-    \lineskiplimit \lineskip
-    \ialign
-    \c_group_begin_token
-    \token_if_eq_meaning:NNT c #1 { \hfil }
-    \Ustartmath
-    \m@th
-    \scriptstyle
-    \tex_alignmark:D \tex_alignmark:D
-    \Ustopmath
-    \hfil
-    \crcr
-  }
 %    \end{macrocode}
 % \end{environment}
 %
@@ -512,17 +522,17 @@
 %   the macro \cmd{\frac\textvisiblespace}.
 %   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
-  \@@_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
-    {
+    \@@_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
+      {
 %<@@=>
-      \begingroup #1 \endgroup \@@over #2
-    }
-  } {
-    {
-      \Ustack { \group_begin: #1 \group_end: \@@over #2 }
+        \begingroup #1 \endgroup \@@over #2
+      }
+    } {
+      {
+        \Ustack { \group_begin: #1 \group_end: \@@over #2 }
 %<@@=lltxmath>
+      }
     }
-  }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -533,33 +543,38 @@
 %   \changes{v1.7}{2017/06/15}{Adapt patch to changes in \pkg{amsmath}}
 %   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
-  \@@_patch:cNnnn { genfrac~ } \cs_set:Npn {
-    #1 #2 #3 #4 #5 #6
-  } {
-    {
-      \@mathstyle { #4 }
-      \genfrac@choice o { #1 }
+    \@@_patch:cNnnn { genfrac~ } \cs_set:Npn {
+      #1 #2 #3 #4 #5 #6
+    } {
       {
-        \begingroup #5 \endgroup
+        \@mathstyle { #4 }
+        \genfrac@choice o { #1 }
+        {
+          \begingroup #5 \endgroup
 %<@@=>
-        \ifx @ #3 @ \@@over \else \@@above \fi #3 \relax
-        #6
-      }
-      \genfrac@choice c { #2 }
-    }
-  } {
-    {
-      \@mathstyle { #4 }
-      \genfrac@choice o { #1 }
-      {
-        \Ustack {
-          \group_begin: #5 \group_end:
-          \tl_if_empty:nTF { #3 } { \@@over } { \@@above #3 \scan_stop: }
-%<@@=lltxmath>
+          \ifx @ #3 @ \@@over \else \@@above \fi #3 \relax
           #6
         }
+        \genfrac@choice c { #2 }
       }
-      \genfrac@choice c { #2 }
+    } {
+      {
+        \@mathstyle { #4 }
+        \genfrac@choice o { #1 }
+        {
+          \Ustack {
+            \group_begin: #5 \group_end:
+            \tl_if_empty:nTF { #3 } {
+              \@@over
+            } {
+              \@@above #3 \scan_stop:
+            }
+%<@@=lltxmath>
+            #6
+          }
+        }
+        \genfrac@choice c { #2 }
+      }
     }
   }
 }
