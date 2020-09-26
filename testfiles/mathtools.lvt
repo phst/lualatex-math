@@ -21,8 +21,20 @@
 
 \START
 
-$\cramped{a^b}$
-\[ \smashoperator{\int_0^1} \]
+\ExplSyntaxOn
+\hbox_set:Nn \l_tmpa_box {
+  \Ustartmath
+  a \Usuperscript b
+  \cramped { a \Usuperscript b }
+  a \Usuperscript { \cramped { b } }
+  \smashoperator {
+    \int \Usubscript { a \Usuperscript b } \Usuperscript { c \Usuperscript d }
+  }
+  \Ustopmath
+}
+\box_use:N \l_tmpa_box
+\box_show:N \l_tmpa_box
+\ExplSyntaxOff
 
 \OMIT
 
