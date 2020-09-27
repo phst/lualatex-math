@@ -511,6 +511,7 @@
 %   (\cmd{\lineskip}).
 %   \changes{v1.8}{2019/01/21}{Stop using \cs{…:D} control sequences}
 %   \changes{v1.9}{2020/09/25}{Don’t patch newer versions of \pkg{amsmath}}
+%   \changes{v1.9}{2020/09/25}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
   \@ifpackagelater { amsmath } { 2020/09/23 } { } {
     \@@_patch:NNnnn \subarray \cs_set:Npn { #1 } {
@@ -549,7 +550,7 @@
       \Ustartmath
       \m@th
       \scriptstyle
-      \tex_alignmark:D \tex_alignmark:D
+      \alignmark \alignmark
       \Ustopmath
       \hfil
       \crcr
@@ -680,10 +681,11 @@
 % changed mathematical style would be applied to the material after the
 % \cmd{\mathchoice} construct.  As the original command works in both text and
 % math mode, we use |\ensuremath| here.
+%   \changes{v1.9}{2020/09/25}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
     {
       \ensuremath {
-        \use:c { luatex_cramped \cs_to_str:N #1 :D } #2
+        \use:c { cramped \cs_to_str:N #1 } #2
       }
     }
   }
