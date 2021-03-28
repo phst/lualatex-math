@@ -1,6 +1,7 @@
 % \iffalse meta-comment
 %
 % Copyright 2011–2020 by Philipp Stephani, Joseph Wright, and Will Robertson
+% Copyright 2021 Google LLC
 %
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -31,7 +32,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{300}
+% \CheckSum{310}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -701,6 +702,8 @@
 % the comma character.  This breaks for Unicode fonts.  The incompatibility was
 % noticed by
 % \Breitfeld.\footnote{\url{https://groups.google.com/forum/\#!topic/de.comp.text.tex/Cputk-AJS5I/discussion}}
+% \changes{v1.10}{2021/03/28}{Use new \Hologo{LaTeX2e} hook management if
+% available}
 %
 % \begin{macro}{\mathcomma}
 %   \pkg{icomma} defines the mathemathical character shorthand \cmd{\icomma} at
@@ -708,10 +711,18 @@
 %   \cmd{\@begindocumenthook}.
 %    \begin{macrocode}
 \@@_after_package_or_now:nn { icomma } {
-  \tl_replace_once:Nnn \@begindocumenthook {
-    \mathchardef \mathcomma \mathcode `\,
+  \@ifl@t@r \fmtversion { 2020/10/01 } {
+    \hook_gput_code:nnn { begindocument } { lualatex-math } {
+      \@@_set_mathchar:NN \mathcomma \,
+      \mathcode `\, = "8000 ~
+    }
+    \hook_gset_rule:nnnn { begindocument } { lualatex-math } { voids } { icomma }
   } {
-    \@@_set_mathchar:NN \mathcomma \,
+    \tl_replace_once:Nnn \@begindocumenthook {
+      \mathchardef \mathcomma \mathcode `\,
+    } {
+      \@@_set_mathchar:NN \mathcomma \,
+    }
   }
 }
 %</package>
