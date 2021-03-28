@@ -635,6 +635,10 @@
 % internal version use a hack involving a null radical.  \Hologo{LuaTeX} has
 % primitives for setting material in cramped mode, so we make use of them.
 %
+% In newer versions of \pkg{mathtools}, this issue is fixed, in which case we
+% skip the patch.
+% \changes{v1.10}{2021/03/28}{Skip patch if \pkg{mathtools} is recent enough}
+%
 % \begin{macro}{\MT_cramped_internal:Nn}
 %   The macro \cmd{\MT_cramped_internal:Nn}\meta{style}\marg{expression}
 %   typesets the \meta{expression} in the cramped style corresponding to the
@@ -645,36 +649,37 @@
 %   single command.
 %    \begin{macrocode}
 \@@_after_package_or_now:nn { mathtools } {
-  \@@_patch:NNnnn \MT_cramped_internal:Nn
-    \cs_set_nopar:Npn { #1 #2 } {
-    \sbox \z@ {
-      $
-      \m@th
-      #1
-      \nulldelimiterspace = \z@
-      \radical \z@ { #2 }
-      $
-    }
-    \ifx #1 \displaystyle
-      \dimen@ = \fontdimen 8 \textfont 3
-      \advance \dimen@ .25 \fontdimen 5 \textfont 2
-    \else
-      \dimen@ = 1.25 \fontdimen 8
-      \ifx #1 \textstyle
-        \textfont
+  \@ifpackagelater { mathtools } { 2021/03/28 } { } {
+    \@@_patch:NNnnn \MT_cramped_internal:Nn
+      \cs_set_nopar:Npn { #1 #2 } {
+      \sbox \z@ {
+        $
+        \m@th
+        #1
+        \nulldelimiterspace = \z@
+        \radical \z@ { #2 }
+        $
+      }
+      \ifx #1 \displaystyle
+        \dimen@ = \fontdimen 8 \textfont 3
+        \advance \dimen@ .25 \fontdimen 5 \textfont 2
       \else
-        \ifx #1 \scriptstyle
-          \scriptfont
+        \dimen@ = 1.25 \fontdimen 8
+        \ifx #1 \textstyle
+          \textfont
         \else
-          \scriptscriptfont
+          \ifx #1 \scriptstyle
+            \scriptfont
+          \else
+            \scriptscriptfont
+          \fi
         \fi
+        3
       \fi
-      3
-    \fi
-    \advance \dimen@ -\ht\z@
-    \ht\z@ = -\dimen@
-    \box\z@
-  } {
+      \advance \dimen@ -\ht\z@
+      \ht\z@ = -\dimen@
+      \box\z@
+    } {
 %    \end{macrocode}
 % \changes{v1.4}{2014/08/18}{Added \cs{ensuremath} to work around
 % \href{https://github.com/phst/lualatex-math/issues/11}{issue~11}}
@@ -684,9 +689,10 @@
 % math mode, we use |\ensuremath| here.
 %   \changes{v1.9}{2020/09/25}{Stop using \cs{…:D} control sequences}
 %    \begin{macrocode}
-    {
-      \ensuremath {
-        \use:c { cramped \cs_to_str:N #1 } #2
+      {
+        \ensuremath {
+          \use:c { cramped \cs_to_str:N #1 } #2
+        }
       }
     }
   }
