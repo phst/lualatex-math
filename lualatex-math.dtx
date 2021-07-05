@@ -32,7 +32,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{310}
+% \CheckSum{314}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -638,6 +638,7 @@
 % In newer versions of \pkg{mathtools}, this issue is fixed, in which case we
 % skip the patch.
 % \changes{v1.10}{2021/03/28}{Skip patch if \pkg{mathtools} is recent enough}
+% \changes{v1.11}{2021/07/05}{Adapt to March 2021 changes to \pkg{mathtools}}
 %
 % \begin{macro}{\MT_cramped_internal:Nn}
 %   The macro \cmd{\MT_cramped_internal:Nn}\meta{style}\marg{expression}
@@ -652,11 +653,11 @@
   \@ifpackagelater { mathtools } { 2021/03/28 } { } {
     \@@_patch:NNnnn \MT_cramped_internal:Nn
       \cs_set_nopar:Npn { #1 #2 } {
-      \sbox \z@ {
+      \setbox \z@ \hbox {
         $
         \m@th
         #1
-        \nulldelimiterspace = \z@
+        \kern -\nulldelimiterspace
         \radical \z@ { #2 }
         $
       }
@@ -678,6 +679,8 @@
       \fi
       \advance \dimen@ -\ht\z@
       \ht\z@ = -\dimen@
+      \ifvmode \leavevmode \fi
+      { }
       \box\z@
     } {
 %    \end{macrocode}
