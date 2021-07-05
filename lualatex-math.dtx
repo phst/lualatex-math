@@ -725,7 +725,8 @@
       \@@_set_mathchar:NN \mathcomma \,
       \mathcode `\, = "8000 ~
     }
-    \hook_gset_rule:nnnn { begindocument } { lualatex-math } { voids } { icomma }
+    \hook_gset_rule:nnnn
+      { begindocument } { lualatex-math } { voids } { icomma }
   } {
     \tl_replace_once:Nnn \@begindocumenthook {
       \mathchardef \mathcomma \mathcode `\,
