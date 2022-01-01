@@ -323,6 +323,7 @@
 %   \meta{code} after the \meta{package} is loaded.  If the \meta{package} is
 %   already loaded, nothing happens.  We prefer using native \hologo{LaTeX2e}
 %   hooks if possible.
+%   \changes{v1.12}{2022-01-01}{Use the new generic hook names if available}
 %    \begin{macrocode}
 \@ifl@t@r \fmtversion { 2021/11/15 } {
   \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
