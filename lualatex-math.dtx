@@ -324,20 +324,29 @@
 %   already loaded, nothing happens.  We prefer using native \hologo{LaTeX2e}
 %   hooks if possible.
 %    \begin{macrocode}
-\@ifl@t@r \fmtversion { 2020/10/01 } {
+\@ifl@t@r \fmtversion { 2021/11/15 } {
   \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
     \AddToHook { package/#1/before } { #2 }
   }
   \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
     \AddToHook { package/#1/after } { #2 }
   }
-} {
-  \RequirePackage { filehook } [ 2011/03/09 ]
-  \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
-    \AtBeginOfPackageFile { #1 } { #2 }
-  }
-  \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
-    \AtEndOfPackageFile { #1 } { #2 }
+}{
+  \@ifl@t@r \fmtversion { 2020/10/01 } {
+    \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
+      \AddToHook { package/before/#1 } { #2 }
+    }
+    \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
+      \AddToHook { package/after/#1 } { #2 }
+    }
+  } {
+    \RequirePackage { filehook } [ 2011/03/09 ]
+    \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
+      \AtBeginOfPackageFile { #1 } { #2 }
+    }
+    \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
+      \AtEndOfPackageFile { #1 } { #2 }
+    }
   }
 }
 %    \end{macrocode}
