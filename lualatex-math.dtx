@@ -151,7 +151,7 @@
 %<@@=lltxmath>
 \NeedsTeXFormat{LaTeX2e}[2020/02/02]
 \RequirePackage{expl3}[2018/06/18]
-\ProvidesExplPackage{lualatex-math}{2021/07/05}{1.11}%
+\ProvidesExplPackage{lualatex-math}{2022/01/01}{1.12}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
@@ -323,21 +323,31 @@
 %   \meta{code} after the \meta{package} is loaded.  If the \meta{package} is
 %   already loaded, nothing happens.  We prefer using native \hologo{LaTeX2e}
 %   hooks if possible.
+%   \changes{v1.12}{2022-01-01}{Use the new generic hook names if available}
 %    \begin{macrocode}
-\@ifl@t@r \fmtversion { 2020/10/01 } {
+\@ifl@t@r \fmtversion { 2021/11/15 } {
   \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
-    \AddToHook { package/before/#1 } { #2 }
+    \AddToHook { package/#1/before } { #2 }
   }
   \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
-    \AddToHook { package/after/#1 } { #2 }
+    \AddToHook { package/#1/after } { #2 }
   }
-} {
-  \RequirePackage { filehook } [ 2011/03/09 ]
-  \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
-    \AtBeginOfPackageFile { #1 } { #2 }
-  }
-  \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
-    \AtEndOfPackageFile { #1 } { #2 }
+}{
+  \@ifl@t@r \fmtversion { 2020/10/01 } {
+    \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
+      \AddToHook { package/before/#1 } { #2 }
+    }
+    \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
+      \AddToHook { package/after/#1 } { #2 }
+    }
+  } {
+    \RequirePackage { filehook } [ 2011/03/09 ]
+    \cs_new_protected_nopar:Npn \@@_before_package:nn #1 #2 {
+      \AtBeginOfPackageFile { #1 } { #2 }
+    }
+    \cs_new_protected_nopar:Npn \@@_after_package:nn #1 #2 {
+      \AtEndOfPackageFile { #1 } { #2 }
+    }
   }
 }
 %    \end{macrocode}
